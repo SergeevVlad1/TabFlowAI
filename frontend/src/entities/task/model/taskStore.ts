@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { persist } from 'zustand/middleware';
 import { Task } from './types';
+import { handleRequest, MethodEnum } from '../../../shared/api';
 
 interface TaskState {
   tasks: Task[];
@@ -21,20 +22,14 @@ export const useTaskStore = create<TaskState>()(
     (set, get) => ({
       tasks: [],
       activeTaskId: null,
-      addTask: (task) =>
-        set((state) => ({
-          tasks: [
-            ...state.tasks,
-            {
-              ...task,
-              id: uuidv4(),
-              createdAt: Date.now(),
-              completed: false,
-              timeSpent: 0,
-              isRunning: false,
-            },
-          ],
-        })),
+      addTask: async (taskData) => {
+        const response = await handleRequest({
+          url: "/tasks",
+          method: MethodEnum.POST,
+          data: taskData,
+        });
+        console.log(response);
+      },
       toggleTask: (id) =>
         set((state) => {
           const task = state.tasks.find((t) => t.id === id);

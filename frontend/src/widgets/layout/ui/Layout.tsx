@@ -4,6 +4,8 @@ import clsx from 'clsx';
 import { useThemeStore } from '../../../entities/theme';
 import { Moon, Sun, LayoutDashboard, CheckSquare, BarChart3, Settings, Sparkles } from 'lucide-react';
 import { AiChat } from '../../ai-chat';
+import { useNavigate } from 'react-router-dom';
+import { PathEnum } from '../../../app/routers/routers.types';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,10 +15,16 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => {
   const { theme, toggleTheme } = useThemeStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  const handleChangeNavigate = (tab: 'dashboard' | 'tasks' | 'stats', path: PathEnum) => {
+    navigate(path)
+    onTabChange(tab)
+  }
 
   return (
     <div className={styles.container}>
@@ -29,23 +37,23 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
         </div>
 
         <nav className={styles.nav}>
-          <button 
+          <button
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'dashboard' })}
-            onClick={() => onTabChange('dashboard')}
+            onClick={() => handleChangeNavigate('dashboard', PathEnum.DASHBOARD)}
           >
             <LayoutDashboard size={18} />
             <span>Dashboard</span>
           </button>
-          <button 
+          <button
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'tasks' })}
-            onClick={() => onTabChange('tasks')}
+            onClick={() => handleChangeNavigate('tasks', PathEnum.TASKS)}
           >
             <CheckSquare size={18} />
             <span>Tasks</span>
           </button>
-          <button 
+          <button
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'stats' })}
-            onClick={() => onTabChange('stats')}
+            onClick={() => handleChangeNavigate('stats', PathEnum.STATS)}
           >
             <BarChart3 size={18} />
             <span>Stats</span>
@@ -61,14 +69,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
           </button>
         </div>
       </aside>
-      
+
       <main className={styles.main}>
         <div className={styles.contentWrapper}>
           <div className={styles.content}>
             {children}
           </div>
         </div>
-        
+
         <div className={styles.chatSection}>
           <AiChat />
         </div>
