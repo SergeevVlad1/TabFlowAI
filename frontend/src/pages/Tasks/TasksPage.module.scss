@@ -91,6 +91,7 @@
     bottom: 0;
     width: 4px;
     background: var(--danger-color);
+    z-index: 2;
   }
 
   &.medium::before {
@@ -101,6 +102,7 @@
     bottom: 0;
     width: 4px;
     background: var(--warning-color);
+    z-index: 2;
   }
 
   &.low::before {
@@ -111,6 +113,7 @@
     bottom: 0;
     width: 4px;
     background: var(--success-color);
+    z-index: 2;
   }
 
   &.running {
@@ -121,6 +124,21 @@
       color: var(--primary-color);
       font-weight: 700;
     }
+
+    .progressFill {
+      background-color: rgba(87, 235, 185, 0.15); // More visible when running
+    }
+  }
+
+  .progressFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(87, 235, 185, 0.08); // Subtle green
+    z-index: 0;
+    transition: width 1s linear;
+    pointer-events: none;
   }
 
   .header {
@@ -128,6 +146,8 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
   }
 
   .title {
@@ -146,6 +166,8 @@
     color: var(--text-secondary);
     padding-top: 0.75rem;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
 
     .timer {
       display: flex;

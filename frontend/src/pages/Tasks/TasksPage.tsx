@@ -93,6 +93,15 @@ export const TasksPage: React.FC = () => {
               [styles.running]: task.isRunning,
             })}
           >
+            <div
+              className={styles.progressFill}
+              style={{
+                width: `${Math.min(
+                  (task.timeSpent / (task.estimatedTime * 60 * 1000)) * 100,
+                  100
+                )}%`,
+              }}
+            />
             <div className={styles.header}>
               <div
                 style={{

@@ -1,7 +1,3 @@
-fastapi
-uvicorn
-pydantic
-python-dotenv
-requests
+corsheaders
 django
 djangorestframework
