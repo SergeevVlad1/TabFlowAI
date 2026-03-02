@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './AiChat.module.scss';
 import clsx from 'clsx';
 import { Send, Bot } from 'lucide-react';
-import { useTaskStore } from '../../../entities/task';
-import { useTrackingStore } from '../../../entities/tracking';
+import { useTaskStore } from '../../../features/tasks/store/taskStore';
+import { useTrackingStore } from '../../../features/tracking/store/trackingStore';
 
 interface Message {
   id: string;

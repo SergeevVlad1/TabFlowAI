@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styles from './Layout.module.scss';
 import clsx from 'clsx';
-import { useThemeStore } from '../../../entities/theme';
+import { useThemeStore } from '../../../features/theme/store/themeStore';
 import { Moon, Sun, LayoutDashboard, CheckSquare, BarChart3, Settings, Sparkles } from 'lucide-react';
 import { AiChat } from '../../ai-chat';
 import { useNavigate } from 'react-router-dom';
