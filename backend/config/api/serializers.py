@@ -22,7 +22,13 @@ from django.contrib.auth import authenticate
 #         return user if user else False
 
 
-from .models import Tab, TabGroup, TabSummary, TabSession
+from .models import Tab, TabGroup, TabSummary, TabSession, Task
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['id', 'title', 'time', 'completed', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
 
 class TabSerializer(serializers.ModelSerializer):
     class Meta:

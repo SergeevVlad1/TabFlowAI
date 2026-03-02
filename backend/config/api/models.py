@@ -86,5 +86,15 @@ class TabSummary(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+class Task(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+    title = models.CharField(max_length=255)
+    time = models.TimeField(null=True, blank=True)
+    completed = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
-        return f"Summary for Tab {self.tab_id}"
+        return f"{self.title} ({self.user.email})"

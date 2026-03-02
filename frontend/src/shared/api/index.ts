@@ -53,7 +53,9 @@ export const handleRequest = async ({
     headers: hasHeaders(),
   });
 
+
   if (response.data.ok) {
+    localStorage.setItem("token", response.data.token);
     return response.data;
   }
   throw new Error(response.data.message);

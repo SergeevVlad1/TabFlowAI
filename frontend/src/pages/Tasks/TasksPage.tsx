@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./TasksPage.module.scss";
-import { useTaskStore } from "../../features/tasks/store/taskStore";
 import clsx from "clsx";
 import { Play, Pause, Trash2, CheckCircle, Circle, Clock } from "lucide-react";
+import { useTaskStore } from "../../features/tasks/store/taskStore";
 
 export const TasksPage: React.FC = () => {
   const {
@@ -82,7 +82,7 @@ export const TasksPage: React.FC = () => {
         </div>
       </div>
 
-      
+
 
       <div>
         {tasks.map((task) => (
