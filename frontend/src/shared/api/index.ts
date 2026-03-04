@@ -1,21 +1,5 @@
 import axios from "axios";
 
-// const api = axios.create({
-//   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
-
-// // Request interceptor to add auth token
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Token ${token}`;
-//   }
-//   return config;
-// });
-
 export const baseURL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -40,12 +24,17 @@ export const handleRequest = async ({
   headers,
 }: RequestParams) => {
   const hasHeaders = () => {
-    if (headers) {
-      return headers;
-    }
-    return {
+    const token = localStorage.getItem("token");
+    const defaultHeaders: Record<string, string> = {
       "Content-Type": "application/json",
     };
+    if (token) {
+      defaultHeaders["Authorization"] = `Bearer ${token}`;
+    }
+    if (headers) {
+      return { ...defaultHeaders, ...headers };
+    }
+    return defaultHeaders;
   };
   const response = await axios(baseURL + url, {
     method,
@@ -53,10 +42,12 @@ export const handleRequest = async ({
     headers: hasHeaders(),
   });
 
-
   if (response.data.ok) {
-    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("token", response.data.user_token);
     return response.data;
   }
-  throw new Error(response.data.message);
+
+  throw new Error(
+    response.data.error?.details || response.data.message || "Request failed",
+  );
 };

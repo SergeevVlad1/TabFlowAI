@@ -2,75 +2,97 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from .models import User
-# from .serializers import SignupSerializer, LoginSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
 
-
-
-# @api_view(['POST'])
-# def signup(request):
-#     serializer = SignupSerializer(data=request.data)
-#     if serializer.is_valid():
-#         user = serializer.save()
-#         token, _ = Token.objects.get_or_create(user=user)
-#         return Response({
-#             "message": "success",
-#             "error": None,
-#             "data": {
-#                 "user_token": token.key,
-#                 "user": serializer.data
-#             }
-#         }, status=201)
-#     return Response({
-#         "message": "error",
-#         "error": {
-#             "code": 422,
-#             "details": "Validation error",
-#             "errors": serializer.errors
-#         },
-#         "data": None
-#     }, status=422)
-
-
-# @api_view(['POST'])
-# def login(request):
-#     serializer = LoginSerializer(data=request.data)
-#     if serializer.is_valid() and serializer.validated_data:
-#         user = serializer.validated_data
-#         token, _ = Token.objects.get_or_create(user=user)
-#         return Response({
-#             "message": "success",
-#             "error": None,
-#             "data": {
-#                 "user_token": token.key,
-#                 "user": {
-#                     'id': user.id,
-#                     'name': user.name,
-#                     'second_name': user.second_name,
-#                     'email': user.email,
-#                     'phone': user.phone,
-#                     'is_agree': user.is_agree,
-#                     'is_staff': user.is_staff,
-#                 }
-#             }
-#         }, status=201)
-#     return Response({
-#         "message": "error",
-#         "error": {
-#             "code": 401,
-#             "details": "Authentication failed"
-#         },
-#         "data": None
-#     }, status=401)
-
-
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
+    RegisterSerializer, LoginSerializer, GoogleAuthSerializer, UserSerializer,
     TabSerializer, TabGroupSerializer, TabSummarySerializer, 
     TabSyncRequestSerializer, TaskSerializer
 )
 from .services import sync_user_tabs
 from .selectors import get_user_tab_groups, search_user_tabs, get_tab_summary
+
+@api_view(['POST'])
+def signup(request):
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            "ok": True,
+            "message": "success",
+            "user_token": token.key,
+            "user": serializer.data
+        }, status=201)
+    return Response({
+        "ok": False,
+        "message": "error",
+        "error": {
+            "code": 422,
+            "details": "Validation error",
+            "errors": serializer.errors
+        }
+    }, status=422)
+
+
+@api_view(['POST'])
+def login(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid() and serializer.validated_data:
+        user = serializer.validated_data
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            "ok": True,
+            "message": "success",
+            "user_token": token.key,
+            "user": {
+                'id': user.id,
+                'name': user.name,
+                'second_name': user.second_name,
+                'email': user.email,
+                'phone': user.phone,
+                'is_agree': user.is_agree,
+                'is_staff': user.is_staff,
+            }
+        })
+    return Response({
+        "ok": False,
+        "message": "error",
+        "error": {
+            "code": 401,
+            "details": "Authentication failed"
+        }
+    }, status=401)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def google_auth_view(request):
+    serializer = GoogleAuthSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.validated_data['user']
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "ok": True,
+            "message": "success",
+            "data": {
+                "user": UserSerializer(user).data,
+                "token": str(refresh.access_token),
+                "refresh": str(refresh)
+            }
+        })
+    return Response({"ok": False, "message": "error", "error": serializer.errors}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def me_view(request):
+    serializer = UserSerializer(request.user)
+    return Response({
+        "ok": True,
+        "message": "success",
+        "data": serializer.data
+    })
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

@@ -1,34 +1,54 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from .models import Tab, TabGroup, TabSummary, TabSession, Task, User
 
-
-# class SignupSerializer(serializers.ModelSerializer):
-#     password = serializers.CharField(max_length=32, min_length=6, write_only=True)
-
-#     class Meta:
-#         model = User
-#         fields = ['id', 'name', 'second_name', 'email', 'phone', 'is_agree', 'password', 'is_staff']
-
-#     def create(self, validated_data):
-#         return User.objects.create_user(**validated_data, username=validated_data['email'])
-
-
-# class LoginSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-#     password = serializers.CharField()
-
-#     def validate(self, attrs):
-#         user = authenticate(**attrs)
-#         return user if user else False
-
-
-from .models import Tab, TabGroup, TabSummary, TabSession, Task
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ['id', 'title', 'time', 'completed', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=6)
+
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'email', 'password']
+        read_only_fields = ['id']
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data, username=validated_data['email'])
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = authenticate(**attrs)
+        return user if user else False
+    
+class GoogleAuthSerializer(serializers.Serializer):
+    id_token = serializers.CharField()
+
+    def validate(self, attrs):
+        from google.oauth2 import id_token as google_id_token
+        from google.auth.transport import requests as google_requests
+        try:
+            idinfo = google_id_token.verify_oauth2_token(attrs['id_token'], google_requests.Request())
+        except Exception as e:
+            raise serializers.ValidationError('Invalid Google token')
+        email = idinfo.get('email')
+        name = idinfo.get('name', '')
+        user, created = User.objects.get_or_create(email=email, defaults={'name': name})
+        attrs['user'] = user
+        return attrs
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'email']
+
 
 class TabSerializer(serializers.ModelSerializer):
     class Meta:
