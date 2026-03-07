@@ -1,8 +1,9 @@
 export interface SimplifiedTab {
   id?: number;
-  title: string;
-  url: string;
+  title?: string;
+  url?: string;
   favIconUrl?: string;
+  category?: string;
 }
 
 export interface Category {
@@ -12,7 +13,7 @@ export interface Category {
   color?: string;
 }
 
-export type ModalState = 'closed' | 'selecting' | 'sending';
+export type ModalState = "closed" | "selecting" | "sending";
 
 export interface AIResponse {
   success: boolean;

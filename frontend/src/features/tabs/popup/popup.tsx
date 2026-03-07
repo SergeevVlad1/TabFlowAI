@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { useTabStore, Category } from "../../../shared/stores/popup.store";
+import { useTabStore, type CategoryType } from "../../../shared/stores/popup.store";
 import styles from "./popup.module.scss";
-import { Sparkles, X, Check, Loader2 } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import clsx from "clsx";
+import { groupTabs } from "./utils/getAllTabs";
 
 export const Popup = () => {
   const {
@@ -21,9 +22,9 @@ export const Popup = () => {
     fetchTabs();
   }, [fetchTabs]);
 
-  const categories: Category[] = ['work', 'study', 'entertainment', 'finance', 'other'];
+  const categories: CategoryType[] = ['work', 'study', 'entertainment', 'finance', 'other'];
 
-  const categoryLabels: Record<Category, string> = {
+  const categoryLabels: Record<CategoryType, string> = {
     work: "Работа",
     study: "Обучение",
     entertainment: "Развлечения",
@@ -32,7 +33,14 @@ export const Popup = () => {
   };
 
   const handleGroupTabs = async () => {
-    await processTabsWithAI();
+    try {
+      const classifiedTabs = await processTabsWithAI();
+      if (classifiedTabs && Array.isArray(classifiedTabs)) {
+        await groupTabs(classifiedTabs);
+      }
+    } catch (error) {
+      console.error("Grouping failed:", error);
+    }
   };
 
   return (

@@ -1,34 +1,46 @@
 // stores/tabStore.ts
-import { create } from 'zustand';
-import { getAllTabs } from '../../features/tabs/getAllTabs/getAllTabs';
-import { SendTabsToAI } from '../../features/tabs/sendTabsToAi/sendTabsToAi';
+import { create } from "zustand";
+import { getAllTabs } from "../../features/tabs/popup/utils/getAllTabs";
+import { SendTabsToAI } from "../../features/tabs/sendTabsToAi/sendTabsToAi";
+import type { SimplifiedTab } from "../../features/tabs/popup/popup.types";
 
-export type Category = 'work' | 'study' | 'entertainment' | 'finance' | 'other';
-export type ModalState = 'closed' | 'selecting_param' | 'sending';
+export type CategoryType =
+  | "work"
+  | "study"
+  | "entertainment"
+  | "finance"
+  | "other";
+export type ModalState = "closed" | "selecting_param" | "sending";
 
 interface TabStore {
   // Состояние
   tabs: chrome.tabs.Tab[];
   loading: boolean;
   modalState: ModalState;
-  selectedCategories: Category[];
-  
+  selectedCategories: CategoryType[];
+
   // Методы
   fetchTabs: () => Promise<void>;
   setModalState: (state: ModalState) => void;
-  toggleCategory: (category: Category) => void;
-  setSelectedCategories: (categories: Category[]) => void;
-  processTabsWithAI: () => Promise<void>;
+  toggleCategory: (category: CategoryType) => void;
+  setSelectedCategories: (categories: CategoryType[]) => void;
+  processTabsWithAI: () => Promise<SimplifiedTab[] | void>;
   reset: () => void;
 }
 
-const DEFAULT_CATEGORIES: Category[] = ['work', 'study', 'entertainment', 'finance', 'other'];
+const DEFAULT_CATEGORIES: CategoryType[] = [
+  "work",
+  "study",
+  "entertainment",
+  "finance",
+  "other",
+];
 
 export const useTabStore = create<TabStore>((set, get) => ({
   // Начальное состояние
   tabs: [],
   loading: false,
-  modalState: 'closed',
+  modalState: "closed",
   selectedCategories: DEFAULT_CATEGORIES,
 
   // Методы
@@ -49,56 +61,59 @@ export const useTabStore = create<TabStore>((set, get) => ({
   toggleCategory: (category) => {
     const { selectedCategories } = get();
     const newCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category)
+      ? selectedCategories.filter((c) => c !== category)
       : [...selectedCategories, category];
     set({ selectedCategories: newCategories });
   },
 
-  setSelectedCategories: (categories) => set({ selectedCategories: categories }),
+  setSelectedCategories: (categories) =>
+    set({ selectedCategories: categories }),
 
   processTabsWithAI: async () => {
     const { tabs, selectedCategories } = get();
-    
-    const simplifiedTabs = tabs
-      ?.map((tab) => ({
-        id: tab.id,
-        title: tab.title,
-        url: tab.url,
-        favIconUrl: tab.favIconUrl,
-      }))
-      .filter((tab): tab is chrome.tabs.Tab => tab.url !== undefined);
 
-    if (!simplifiedTabs || simplifiedTabs.length === 0) {
+    const simplifiedTabs = tabs
+      .filter((tab) => tab.url !== undefined)
+      .map((tab) => ({
+        id: tab.id,
+        title: tab.title ?? "",
+        url: tab.url ?? "",
+      }));
+
+    if (simplifiedTabs.length === 0) {
       console.warn("No tabs found to process.");
       return;
     }
 
-    set({ modalState: 'sending' });
-    
+    set({ modalState: "sending" });
+
     try {
-      await SendTabsToAI(simplifiedTabs, selectedCategories);
-      set({ modalState: 'closed' });
+      const response = await SendTabsToAI(tabs, selectedCategories);
+      set({ modalState: "closed" });
+      return response;
     } catch (error) {
       console.error("Failed to process tabs:", error);
-      set({ modalState: 'selecting_param' }); // Возвращаем на шаг выбора при ошибке
+      set({ modalState: "selecting_param" });
+      throw error;
     }
   },
 
-  reset: () => set({ 
-    modalState: 'closed', 
-    selectedCategories: DEFAULT_CATEGORIES 
-  }),
+  reset: () =>
+    set({
+      modalState: "closed",
+      selectedCategories: DEFAULT_CATEGORIES,
+    }),
 }));
 
 // Селекторы для оптимизации
 export const useSimplifiedTabs = () => {
-  const tabs = useTabStore(state => state.tabs);
+  const tabs = useTabStore((state) => state.tabs);
   return tabs
-    ?.map((tab) => ({
+    .filter((tab) => tab.url !== undefined)
+    .map((tab) => ({
       id: tab.id,
-      title: tab.title,
-      url: tab.url,
+      title: tab.title ?? "",
+      url: tab.url ?? "",
       favIconUrl: tab.favIconUrl,
-    }))
-    .filter((tab): tab is chrome.tabs.Tab => tab.url !== undefined);
+    }));
 };
