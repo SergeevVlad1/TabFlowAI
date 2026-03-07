@@ -13,13 +13,11 @@ export type CategoryType =
 export type ModalState = "closed" | "selecting_param" | "sending";
 
 interface TabStore {
-  // Состояние
   tabs: chrome.tabs.Tab[];
   loading: boolean;
   modalState: ModalState;
   selectedCategories: CategoryType[];
 
-  // Методы
   fetchTabs: () => Promise<void>;
   setModalState: (state: ModalState) => void;
   toggleCategory: (category: CategoryType) => void;

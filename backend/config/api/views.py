@@ -37,15 +37,14 @@ def classify_tabs_view(request):
 
     prompt = f"""
     You are a strict JSON classifier.
-
-    Categorize each browser tab into ONE of these categories:
-    {categories}
-
-    Return ONLY valid JSON array like this:
+    Given the target category: {categories}
+    Categorize each browser tab as either "{categories}" if it clearly relates to that category (based on title, URL, or content theme), or "unnecessary" if it does not fit.
+    Categories are strictly limited to: {categories}, unnecessary
+    Return ONLY a valid JSON array like this:
     [
       {{"id": 1, "category": "study"}}
     ]
-
+    Do not include any explanations or extra text.
     Tabs:
     {tabs}
     """ 
