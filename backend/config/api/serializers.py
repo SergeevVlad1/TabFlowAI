@@ -63,6 +63,7 @@ class TabClassificationSerializer(serializers.Serializer):
 class TabGroupRequestSerializer(serializers.Serializer):
     tabs = TabClassificationSerializer(many=True)
     categories = serializers.ListField(child=serializers.CharField())
+    category = serializers.CharField(required=False)
 
 class TabSummarySerializer(serializers.ModelSerializer):
     class Meta:

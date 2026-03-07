@@ -33,21 +33,39 @@ def classify_tabs_view(request):
     serializer.is_valid(raise_exception=True)
 
     tabs = serializer.validated_data["tabs"]
-    categories = serializer.validated_data["categories"]
+    category = serializer.validated_data.get("category")
+    categories = serializer.validated_data['categories']
+    
+    # If category is provided, we use it. If not, we might still use categories list for backward compatibility
+    target_category = category if category else (serializer.validated_data["categories"][0] if serializer.validated_data["categories"] else "general")
 
     prompt = f"""
-    You are a strict JSON classifier.
-    Given the target category: {categories}
-    Categorize each browser tab as either "{categories}" if it clearly relates to that category (based on title, URL, or content theme), or "unnecessary" if it does not fit.
-    Categories are strictly limited to: {categories}, unnecessary
+    You are a strict JSON classifier for browser tabs.
+
+    The user has selected a focus category: {target_category}
+
+    Your task is:
+    1. For each tab, determine if it is related to the category '{target_category}' based on its title and URL (if available).
+    2. If a tab has no URL or an empty URL, base the classification solely on the title.
+    3. If both title and URL are empty or missing, or if the tab cannot be classified, assign it to "unnecessary".
+    4. If the tab is not related to '{target_category}', assign it to the category "unnecessary".
+    5. If the tab is related to '{target_category}', analyze its content (based on title and URL if present) and assign it to a meaningful subcategory within '{target_category}'. 
+       - Create subcategories dynamically based on the tabs provided.
+       - Use consistent subcategory names for similar tabs (e.g., for 'work': "Emails", "Documents", "Research", "Meetings").
+       - Subcategory names should be short, descriptive, and relevant to the main category.
+       - Aim for 3-6 subcategories if possible, grouping similar tabs together; avoid creating a unique subcategory for every tab unless necessary.
+
     Return ONLY a valid JSON array like this:
     [
-      {{"id": 1, "category": "study"}}
+      {{"id": 1, "category": "Emails"}},
+      {{"id": 2, "category": "unnecessary"}}
     ]
-    Do not include any explanations or extra text.
+
+    Do not include any explanations, additional text, or other output outside the JSON array.
+
     Tabs:
     {tabs}
-    """ 
+    """
 
     try:
         response = model.generate_content(
