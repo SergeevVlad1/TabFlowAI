@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { handleRequest, MethodEnum } from '../../shared/api';
+import { useNavigate, Link } from 'react-router-dom';
 
 export const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -15,7 +17,7 @@ export const LoginPage = () => {
                 data: { email, password },
             });
             if (response && response.ok) {
-                window.location.href = '/';
+                navigate('/');
             } else {
                 setError('Login failed');
             }
@@ -66,7 +68,7 @@ export const LoginPage = () => {
             </div>
 
             <div className="mt-4 text-center text-sm text-[var(--color-text-secondary)]">
-                Don't have an account? <a href="/register" className="text-[var(--color-primary)] hover:underline">Register</a>
+                Don't have an account? <Link to="/register" className="text-[var(--color-primary)] hover:underline">Register</Link>
             </div>
         </div>
     );

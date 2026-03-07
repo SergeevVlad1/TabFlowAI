@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { handleRequest, MethodEnum } from '../../shared/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { PathEnum } from '../../app/routers/routers.types';
 
 export const RegisterPage = () => {
@@ -63,7 +63,7 @@ export const RegisterPage = () => {
             </form>
 
             <div className="mt-4 text-center text-sm text-[var(--color-text-secondary)]">
-                Already have an account? <a href="/login" className="text-[var(--color-primary)] hover:underline">Login</a>
+                Already have an account? <Link to="/login" className="text-[var(--color-primary)] hover:underline">Login</Link>
             </div>
         </div>
     );

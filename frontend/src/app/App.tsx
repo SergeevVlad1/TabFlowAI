@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Layout } from '../widgets/layout';
+import { Layout } from '../widgets/layout/ui/Layout';
 import './styles/index.scss';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, HashRouter } from 'react-router-dom';
 import { routers } from './routers/routers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PathEnum } from './routers/routers.types';
@@ -16,7 +16,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <HashRouter>
         <Layout activeTab={activeTab} onTabChange={setActiveTab}>
           <Routes>
             <Route path={PathEnum.LOGIN} element={<LoginPage />} />
@@ -30,7 +30,7 @@ function App() {
             ))}
           </Routes>
         </Layout>
-      </BrowserRouter>
+      </HashRouter>
     </QueryClientProvider>
   );
 }

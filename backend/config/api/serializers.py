@@ -49,11 +49,20 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'name', 'email']
 
-
 class TabSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tab
         fields = ['id', 'url', 'title', 'favicon', 'domain', 'browser_tab_id', 'browser_window_id', 'created_at', 'last_accessed']
+
+class TabClassificationSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    url = serializers.URLField()
+    title = serializers.CharField(required=False, allow_blank=True)
+    favIconUrl = serializers.URLField(required=False, allow_blank=True, allow_null=True)
+
+class TabGroupRequestSerializer(serializers.Serializer):
+    tabs = TabClassificationSerializer(many=True)
+    categories = serializers.ListField(child=serializers.CharField())
 
 class TabSummarySerializer(serializers.ModelSerializer):
     class Meta:

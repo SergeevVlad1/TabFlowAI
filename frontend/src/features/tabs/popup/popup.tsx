@@ -1,58 +1,107 @@
 import { useEffect } from "react";
-
-import { useState } from "react";
+import { useTabStore, Category } from "../../../shared/stores/popup.store";
+import styles from "./popup.module.scss";
+import { Sparkles, X, Check, Loader2 } from "lucide-react";
+import clsx from "clsx";
 
 export const Popup = () => {
-  const [tabs, setTabs] = useState<chrome.tabs.Tab[]>([]);
+  const {
+    tabs,
+    loading,
+    modalState,
+    selectedCategories,
+    fetchTabs,
+    setModalState,
+    toggleCategory,
+    processTabsWithAI,
+    reset
+  } = useTabStore();
+
   useEffect(() => {
-    const fetchTabs = async () => {
-      const tabs = await chrome.tabs.query({ currentWindow: true });
-      setTabs(tabs);
-    };
     fetchTabs();
-  }, []);
+  }, [fetchTabs]);
 
-  const handleGroupTabs = () => {
-    const simplifiedTabs = tabs?.map((tab) => ({
-      id: tab.id,
-      title: tab.title,
-      url: tab.url,
-    })).filter(tab => tab.id !== undefined);
+  const categories: Category[] = ['work', 'study', 'entertainment', 'finance', 'other'];
 
-    chrome.runtime.sendMessage({
-      action: "groupTabs",
-      tabs: simplifiedTabs,
-    }, (response) => {
-      if (response?.success) {
-        console.log("Tabs grouped successfully");
-      } else {
-        console.error("Failed to group tabs", response?.error);
-      }
-    });
+  const categoryLabels: Record<Category, string> = {
+    work: "Работа",
+    study: "Обучение",
+    entertainment: "Развлечения",
+    finance: "Финансы",
+    other: "Разное"
+  };
+
+  const handleGroupTabs = async () => {
+    await processTabsWithAI();
   };
 
   return (
-    <div style={{ padding: "16px", width: "300px" }}>
-      <h3>Tab Manager AI</h3>
-      <p>Click to automatically group your tabs using AI classification.</p>
-      <button 
-        onClick={handleGroupTabs}
-        style={{
-          width: "100%",
-          padding: "10px",
-          backgroundColor: "var(--primary-color, #007bff)",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          fontWeight: "bold"
-        }}
+    <div className={styles.popup}>
+      <h3>TabFlow AI</h3>
+      <p>Организуйте свои вкладки с помощью искусственного интеллекта.</p>
+
+      <button
+        className={styles.mainButton}
+        onClick={() => setModalState('selecting_param')}
+        disabled={loading || tabs.length === 0}
       >
-        Group Tabs Now
+        <Sparkles size={18} />
+        {loading ? "Загрузка..." : "Сгруппировать вкладки"}
       </button>
-      <div style={{ marginTop: "12px", fontSize: "12px", color: "#666" }}>
-        Found {tabs.length} tabs in current window
+
+      <div className={styles.stats}>
+        {loading ? (
+          <Loader2 size={14} className={styles.spin} />
+        ) : (
+          <span>Найдено {tabs.length} вкладок</span>
+        )}
       </div>
+
+      {modalState !== 'closed' && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            {modalState === 'selecting_param' ? (
+              <>
+                <h4>Выберите категории</h4>
+                <div className={styles.categoryGrid}>
+                  {categories.map((cat) => (
+                    <div
+                      key={cat}
+                      className={clsx(
+                        styles.categoryItem,
+                        selectedCategories.includes(cat) && styles.active
+                      )}
+                      onClick={() => toggleCategory(cat)}
+                    >
+                      {categoryLabels[cat]}
+                    </div>
+                  ))}
+                </div>
+                <div className={styles.modalActions}>
+                  <button
+                    className={styles.cancelBtn}
+                    onClick={reset}
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    className={styles.confirmBtn}
+                    onClick={handleGroupTabs}
+                    disabled={selectedCategories.length === 0}
+                  >
+                    Начать
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className={styles.sendingState}>
+                <div className={styles.loadingSpinner}></div>
+                <p>ИИ анализирует вкладки...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

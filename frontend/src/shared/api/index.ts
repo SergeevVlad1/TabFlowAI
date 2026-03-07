@@ -23,12 +23,12 @@ export const handleRequest = async ({
   data,
   headers,
 }: RequestParams) => {
-  const hasHeaders = () => {
+  const getFullHeaders = () => {
     const token = localStorage.getItem("token");
     const defaultHeaders: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    if (token) {
+    if (token && token !== "undefined" && token !== "null") {
       defaultHeaders["Authorization"] = `Bearer ${token}`;
     }
     if (headers) {
@@ -36,18 +36,42 @@ export const handleRequest = async ({
     }
     return defaultHeaders;
   };
-  const response = await axios(baseURL + url, {
-    method,
-    data,
-    headers: hasHeaders(),
-  });
 
-  if (response.data.ok) {
-    localStorage.setItem("token", response.data.user_token);
-    return response.data;
+  try {
+    const response = await axios(baseURL + url, {
+      method,
+      data,
+      headers: getFullHeaders(),
+    });
+
+    // Check for success statuses (200, 201 etc.)
+    if (response.status >= 200 && response.status < 300) {
+      // If the response explicitly returns ok: false, it's a domain error
+      if (response.data.ok === false) {
+        throw new Error(
+          response.data.error?.details ||
+            response.data.message ||
+            "Request failed",
+        );
+      }
+
+      // Update token if it's in the response (usually on login/register)
+      if (response.data.user_token) {
+        localStorage.setItem("token", response.data.user_token);
+      }
+      return response.data;
+    }
+
+    throw new Error(response.data.message || "Request failed");
+  } catch (error: any) {
+    if (error.response) {
+      // The server responded with a status outside of 2xx
+      throw new Error(
+        error.response.data.error?.details ||
+          error.response.data.message ||
+          "Network error",
+      );
+    }
+    throw error;
   }
-
-  throw new Error(
-    response.data.error?.details || response.data.message || "Request failed",
-  );
 };

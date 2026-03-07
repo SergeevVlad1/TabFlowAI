@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { v4 as uuidv4 } from "uuid";
 import { persist } from "zustand/middleware";
 import { handleRequest, MethodEnum } from "../../../shared/api";
 
@@ -44,10 +43,6 @@ export const useTaskStore = create<TaskState>()(
           url: "/tasks",
           method: MethodEnum.POST,
           data: taskData,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${localStorage.getItem("token")}`,
-          },
         });
         console.log(response);
       },

@@ -6,6 +6,7 @@ import { useTrackingStore } from '../../features/tracking/store/trackingStore';
 import { aiAgent } from '../../features/ai/services/AiAgent';
 import { Sparkles, Play, Flame, CheckCircle2, Clock } from 'lucide-react';
 import clsx from 'clsx';
+import { Popup } from '../../features/tabs/popup/popup';
 
 export const Dashboard: React.FC = () => {
   const { insights } = useAiStore();
@@ -37,6 +38,8 @@ export const Dashboard: React.FC = () => {
           <span>Focus Now</span>
         </button>
       </header>
+
+      <Popup />
 
       <div className={styles.grid}>
         <section className={styles.section}>
@@ -89,7 +92,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div className={styles.statItem}>
             <span className={styles.value}>
-              <Clock size={18} style={{verticalAlign: 'middle', marginRight: 4}} />
+              <Clock size={18} style={{ verticalAlign: 'middle', marginRight: 4 }} />
               {Math.round(getDailyDuration('focus'))}m
             </span>
             <span className={styles.label}>Focused</span>

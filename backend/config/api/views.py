@@ -3,16 +3,73 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from .models import User
 from django.shortcuts import get_object_or_404
-
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
     RegisterSerializer, LoginSerializer, GoogleAuthSerializer, UserSerializer,
     TabSerializer, TabGroupSerializer, TabSummarySerializer, 
-    TabSyncRequestSerializer, TaskSerializer
+    TabSyncRequestSerializer, TaskSerializer, TabGroupRequestSerializer
 )
 from .services import sync_user_tabs
 from .selectors import get_user_tab_groups, search_user_tabs, get_tab_summary
+from django.conf import settings
+import json
+import google.generativeai as genai
+import re
+
+genai.configure(api_key=settings.GOOGLE_API_KEY)
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+def extract_json(text):
+    match = re.search(r'\[.*\]', text, re.DOTALL)
+    if match:
+        return match.group(0)
+    raise ValueError("No JSON found")
+
+@api_view(['POST'])
+def classify_tabs_view(request):    
+    serializer = TabGroupRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    tabs = serializer.validated_data["tabs"]
+    categories = serializer.validated_data["categories"]
+
+    prompt = f"""
+    You are a strict JSON classifier.
+
+    Categorize each browser tab into ONE of these categories:
+    {categories}
+
+    Return ONLY valid JSON array like this:
+    [
+      {{"id": 1, "category": "study"}}
+    ]
+
+    Tabs:
+    {tabs}
+    """ 
+
+    try:
+        response = model.generate_content(
+            prompt,
+            generation_config={
+                "response_mime_type": "application/json"
+            }
+        )
+
+        raw_text = response.text
+
+        json_string = extract_json(raw_text)
+        parsed = json.loads(json_string)
+
+        return Response(parsed, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 @api_view(['POST'])
 def signup(request):

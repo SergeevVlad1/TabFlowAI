@@ -1,7 +1,7 @@
-import { useTaskStore } from '../../../entities/task';
-import { useTabStore } from '../../../entities/tab';
-import { useTrackingStore } from '../../../entities/tracking';
-import { useAiStore } from '../../../entities/ai';
+import { useTaskStore } from '../../tasks/store/taskStore';
+import { useTabStore } from '../../tabs/store/tabStore';
+import { useTrackingStore } from '../../tracking/store/trackingStore';
+import { useAiStore } from '../../ai/store/aiStore';
 
 class ProductivityAiAgent {
   
@@ -38,7 +38,7 @@ class ProductivityAiAgent {
   private analyzeTasks() {
     const { tasks } = useTaskStore.getState();
     const { addInsight } = useAiStore.getState();
-    const highPriTasks = tasks.filter(t => t.priority === 'high' && !t.completed);
+    const highPriTasks = tasks.filter((t: any) => t.priority === 'high' && !t.completed);
 
     if (highPriTasks.length > 2) {
       addInsight({
