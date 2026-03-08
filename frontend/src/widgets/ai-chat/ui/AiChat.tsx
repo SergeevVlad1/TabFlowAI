@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Send, Bot, Sparkles, Minus, Maximize2 } from "lucide-react";
 import { useTaskStore } from "../../../features/tasks/store/taskStore";
 import { useTrackingStore } from "../../../features/tracking/store/trackingStore";
+import { Input } from "../../../shared/ui/input/input";
 
 interface Message {
 	id: string;
@@ -148,15 +149,16 @@ export const AiChat: React.FC = () => {
 
 						<div className={styles.inputArea}>
 							<div className={styles.inputWrapper}>
-								<input
+								<Input
 									type="text"
 									value={input}
-									onChange={(e) => setInput(e.target.value)}
+									onChange={setInput}
 									onKeyDown={(e) =>
 										e.key === "Enter" && handleSend()
 									}
 									placeholder="Message AI Assistant..."
 									disabled={isTyping}
+									fullWidth
 								/>
 							</div>
 							<button

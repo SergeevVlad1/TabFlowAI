@@ -3,6 +3,7 @@ import { handleRequest, MethodEnum } from "../../shared/api";
 import type { BaseResponse } from "../../shared/api";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.scss";
+import { Input } from "../../shared/ui/input/input";
 
 export const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -52,26 +53,24 @@ export const LoginPage = () => {
 						Continue with Google
 					</button>
 					<div className={styles.divider}>Or continue with</div>
-					<div className={styles.inputGroup}>
-						<label>Email Address</label>
-						<input
-							type="email"
-							placeholder="name@company.com"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							required
-						/>
-					</div>
-					<div className={styles.inputGroup}>
-						<label>Password</label>
-						<input
-							type="password"
-							placeholder="••••••••"
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							required
-						/>
-					</div>
+					<Input
+						label="Email Address"
+						type="email"
+						placeholder="name@company.com"
+						value={email}
+						onChange={setEmail}
+						required
+						fullWidth
+					/>
+					<Input
+						label="Password"
+						type="password"
+						placeholder="••••••••"
+						value={password}
+						onChange={setPassword}
+						required
+						fullWidth
+					/>
 
 					<button type="submit" className={styles.submitBtn}>
 						Sign in

@@ -1,16 +1,12 @@
-export const InputType = {
-	text: "text",
-	number: "number",
-	email: "email",
-	password: "password",
-} as const;
+import type { InputHTMLAttributes } from "react";
 
-export type InputType = (typeof InputType)[keyof typeof InputType];
-
-export interface InputProps {
-	type: InputType;
-	placeholder?: string;
-	value?: string;
-	cn?: string;
-	onChange: (value: string) => void;
+export interface InputProps extends Omit<
+	InputHTMLAttributes<HTMLInputElement>,
+	"onChange"
+> {
+	label?: string;
+	error?: string;
+	fullWidth?: boolean;
+	onChange?: (value: string) => void;
+	className?: string; // standard className support
 }

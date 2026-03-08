@@ -3,6 +3,7 @@ import styles from "./TasksPage.module.scss";
 import clsx from "clsx";
 import { Play, Pause, Trash2, CheckCircle, Circle, Clock } from "lucide-react";
 import { useTaskStore } from "../../features/tasks/store/taskStore";
+import { Input } from "../../shared/ui/input/input";
 
 export const TasksPage: React.FC = () => {
   const {
@@ -76,12 +77,13 @@ export const TasksPage: React.FC = () => {
   return (
     <div className={styles.taskList}>
       <div className={styles.inputCard}>
-        <input
+        <Input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={setTitle}
           placeholder="What needs to be done?"
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          fullWidth
         />
         <div className={styles.row}>
           <select
@@ -93,10 +95,10 @@ export const TasksPage: React.FC = () => {
             <option value="medium">Medium Priority</option>
             <option value="low">Low Priority</option>
           </select>
-          <input
+          <Input
             type="number"
             value={estimatedTime}
-            onChange={(e) => setEstimatedTime(e.target.value)}
+            onChange={setEstimatedTime}
             placeholder="Min"
             style={{ width: "80px" }}
             min="1"
