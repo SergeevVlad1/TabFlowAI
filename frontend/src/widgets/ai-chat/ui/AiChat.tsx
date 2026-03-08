@@ -78,56 +78,59 @@ export const AiChat: React.FC = () => {
   };
 
   return (
-    <div className={clsx(styles.chatContainer, { [styles.minimized]: isMinimized })}>
-      <div className={styles.chatHeader}>
-        <div className={styles.headerTitle}>
-          <Sparkles size={16} />
-          <span>AI Assistant</span>
+    <>
+      <div className={clsx(styles.chatContainer, { [styles.minimized]: isMinimized })}>
+        <div className={styles.chatHeader}>
+          <div className={styles.headerTitle}>
+            <Sparkles size={16} />
+            <span>AI Assistant</span>
+          </div>
+          <button className={styles.minimizeBtn} onClick={() => setIsMinimized(!isMinimized)}>
+            {isMinimized ? <Maximize2 className={styles.iconOpen} size={16} /> : <Minus className={styles.iconClose} size={16} />}
+          </button>
         </div>
-        <button className={styles.minimizeBtn} onClick={() => setIsMinimized(!isMinimized)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
-          {isMinimized ? <Maximize2 size={16} /> : <Minus size={16} />}
-        </button>
-      </div>
 
-      {!isMinimized && (
-        <>
-          <div className={styles.messages}>
-            {messages.map(msg => (
-              <div key={msg.id} className={clsx(styles.message, styles[msg.sender])}>
-                {msg.sender === 'ai' && <Bot size={18} className={styles.botIcon} />}
-                <div className={styles.messageContent}>{msg.text}</div>
-              </div>
-            ))}
-            {isTyping && (
-              <div className={clsx(styles.message, styles.ai)}>
-                <Bot size={18} className={styles.botIcon} />
-                <div className={styles.typingIndicator}>
-                  <span />
-                  <span />
-                  <span />
+        {!isMinimized && (
+          <>
+            <div className={styles.messages}>
+              {messages.map(msg => (
+                <div key={msg.id} className={clsx(styles.message, styles[msg.sender])}>
+                  {msg.sender === 'ai' && <Bot size={18} className={styles.botIcon} />}
+                  <div className={styles.messageContent}>{msg.text}</div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className={styles.inputArea}>
-            <div className={styles.inputWrapper}>
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Message AI Assistant..."
-                disabled={isTyping}
-              />
+              ))}
+              {isTyping && (
+                <div className={clsx(styles.message, styles.ai)}>
+                  <Bot size={18} className={styles.botIcon} />
+                  <div className={styles.typingIndicator}>
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
-            <button onClick={handleSend} disabled={!input.trim() || isTyping}>
-              <Send size={18} />
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+
+            <div className={styles.inputArea}>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="Message AI Assistant..."
+                  disabled={isTyping}
+                />
+              </div>
+              <button onClick={handleSend} disabled={!input.trim() || isTyping}>
+                <Send size={18} />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+
   );
 };

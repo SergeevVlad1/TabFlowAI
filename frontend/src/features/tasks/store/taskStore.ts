@@ -31,6 +31,7 @@ interface TaskState {
   pauseTask: (id: string) => void;
   tickTask: (id: string, ms: number) => void;
   getTasksByPriority: () => Task[];
+  showTasks: () => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -39,12 +40,20 @@ export const useTaskStore = create<TaskState>()(
       tasks: [],
       activeTaskId: null,
       addTask: async (taskData) => {
-        const response = await handleRequest({
+        const response = await handleRequest<
+          Task,
+          Omit<
+            Task,
+            "id" | "createdAt" | "completed" | "timeSpent" | "isRunning"
+          >
+        >({
           url: "/tasks",
           method: MethodEnum.POST,
           data: taskData,
         });
-        console.log(response);
+        if (response) {
+          set((state) => ({ tasks: [...state.tasks, response] }));
+        }
       },
       toggleTask: (id) =>
         set((state) => {
@@ -66,6 +75,15 @@ export const useTaskStore = create<TaskState>()(
             ),
           };
         }),
+      showTasks: async () => {
+        const response = await handleRequest<Task[]>({
+          url: "/tasks",
+          method: MethodEnum.GET,
+        });
+        if (response) {
+          set({ tasks: response });
+        }
+      },
       deleteTask: (id) =>
         set((state) => ({
           tasks: state.tasks.filter((t) => t.id !== id),

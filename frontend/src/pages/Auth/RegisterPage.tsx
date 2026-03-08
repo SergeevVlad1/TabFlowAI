@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { handleRequest, MethodEnum } from '../../shared/api';
+import type { BaseResponse } from '../../shared/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { PathEnum } from '../../app/routers/routers.types';
 import styles from './Auth.module.scss';
@@ -14,7 +15,7 @@ export const RegisterPage = () => {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await handleRequest({
+            const response = await handleRequest<BaseResponse, any>({
                 url: '/auth/register',
                 method: MethodEnum.POST,
                 data: { name, email, password },

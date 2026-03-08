@@ -14,12 +14,14 @@ export const TasksPage: React.FC = () => {
     startTask,
     pauseTask,
     tickTask,
+    showTasks
   } = useTaskStore();
   const [newTask, setNewTask] = useState("");
   const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
   const [estimatedTime, setEstimatedTime] = useState<string>("25"); // Default 25 min
-
-  // Timer Effect
+  useEffect(() => {
+    showTasks();
+  }, [])
   useEffect(() => {
     let interval: any;
     if (activeTaskId) {
@@ -47,8 +49,6 @@ export const TasksPage: React.FC = () => {
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
-
-  console.log(tasks.map((task) => task))
 
   return (
     <div className={styles.taskList}>
@@ -81,9 +81,6 @@ export const TasksPage: React.FC = () => {
           <button onClick={handleAdd}>Add</button>
         </div>
       </div>
-
-
-
       <div>
         {tasks.map((task) => (
           <div
@@ -157,7 +154,7 @@ export const TasksPage: React.FC = () => {
                 <Clock size={12} />
                 {formatTime(task.timeSpent)} / {task.estimatedTime}m
               </span>
-              <span>{task.priority.toUpperCase()}</span>
+              <span>{task.priority?.toUpperCase()}</span>
             </div>
           </div>
         ))}

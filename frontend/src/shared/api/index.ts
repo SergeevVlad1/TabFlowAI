@@ -11,19 +11,32 @@ export enum MethodEnum {
   DELETE = "DELETE",
 }
 
-export interface RequestParams {
+/**
+ * Базовая структура ответа от сервера.
+ * Это позволяет избежать any и гарантирует наличие поля ok.
+ */
+export interface BaseResponse {
+  ok: boolean;
+  message?: string;
+  error?: {
+    details?: string;
+  };
+  [key: string]: unknown; // Для дополнительных полей, таких как user_token
+}
+
+export interface RequestParams<D = void> {
   url: string;
   method: MethodEnum;
-  data: any;
+  data?: D;
   headers?: Record<string, string>;
 }
 
-export const handleRequest = async ({
+export const handleRequest = async <T = unknown, D = void>({
   url,
   method,
   data,
   headers,
-}: RequestParams) => {
+}: RequestParams<D>): Promise<T> => {
   const getFullHeaders = async () => {
     const token = await storage.get("token");
     const defaultHeaders: Record<string, string> = {

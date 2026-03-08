@@ -1,29 +1,30 @@
-import React, { useState } from 'react';
-import { handleRequest, MethodEnum } from '../../shared/api';
-import { useNavigate, Link } from 'react-router-dom';
-import styles from './Auth.module.scss';
+import React, { useState } from "react";
+import { handleRequest, MethodEnum } from "../../shared/api";
+import type { BaseResponse } from "../../shared/api";
+import { useNavigate, Link } from "react-router-dom";
+import styles from "./Auth.module.scss";
 
 export const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await handleRequest({
-                url: '/auth/login',
+            const response = await handleRequest<BaseResponse, any>({
+                url: "/auth/login",
                 method: MethodEnum.POST,
                 data: { email, password },
             });
             if (response && response.ok) {
-                navigate('/');
+                navigate("/");
             } else {
-                setError('Login failed. Please check your credentials.');
+                setError("Login failed. Please check your credentials.");
             }
         } catch (err: any) {
-            setError(err.message || 'Error logging in');
+            setError(err.message || "Error logging in");
         }
     };
 
@@ -40,6 +41,11 @@ export const LoginPage = () => {
                 {error && <div className={styles.error}>{error}</div>}
 
                 <form onSubmit={handleLogin} className={styles.form}>
+                    <button onClick={handleGoogleLogin} className={styles.googleBtn}>
+                        <img src="https://www.google.com/favicon.ico" alt="Google" />
+                        Continue with Google
+                    </button>
+                    <div className={styles.divider}>Or continue with</div>
                     <div className={styles.inputGroup}>
                         <label>Email Address</label>
                         <input
@@ -65,13 +71,6 @@ export const LoginPage = () => {
                         Sign in
                     </button>
                 </form>
-
-                <div className={styles.divider}>OR</div>
-
-                <button onClick={handleGoogleLogin} className={styles.googleBtn}>
-                    <img src="https://www.google.com/favicon.ico" alt="Google" />
-                    Continue with Google
-                </button>
 
                 <div className={styles.footer}>
                     Don't have an account? <Link to="/register">Create one for free</Link>

@@ -203,3 +203,19 @@
     }
   }
 }
+
+.iconOpen{
+  // display: none;
+}
+
+.iconClose{
+  display: block;
+}
+
+.minimizeBtn{
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+}
