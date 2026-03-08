@@ -1,1 +1,1 @@
-export { AiChat } from './ui/AiChat';
+export { AiChat } from "./ui/AiChat";

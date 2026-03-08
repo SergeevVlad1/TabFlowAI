@@ -8,34 +8,33 @@ import { RegisterPage } from "../../pages/Auth/RegisterPage";
 import { SettingsPage } from "../../pages/Settings/SettingsPage";
 
 interface Router<T> {
-    path: PathEnum;
-    element: T;
+	path: PathEnum;
+	element: T;
 }
 
 export const routers: Router<JSX.Element>[] = [
-    {
-        path: PathEnum.DASHBOARD,
-        element: <Dashboard />
-    },
-    {
-        path: PathEnum.TASKS,
-        element: <TasksPage />
-    },
-    {
-        path: PathEnum.STATS,
-        element: <StatsPage />
-    },
-    {
-        path: PathEnum.LOGIN,
-        element: <LoginPage />
-    },
-    {
-        path: PathEnum.REGISTER,
-        element: <RegisterPage />
-    },
-    {
-        path: PathEnum.SETTINGS,
-        element: <SettingsPage />
-    }
-]
-
+	{
+		path: PathEnum.DASHBOARD,
+		element: <Dashboard />,
+	},
+	{
+		path: PathEnum.TASKS,
+		element: <TasksPage />,
+	},
+	{
+		path: PathEnum.STATS,
+		element: <StatsPage />,
+	},
+	{
+		path: PathEnum.LOGIN,
+		element: <LoginPage />,
+	},
+	{
+		path: PathEnum.REGISTER,
+		element: <RegisterPage />,
+	},
+	{
+		path: PathEnum.SETTINGS,
+		element: <SettingsPage />,
+	},
+];

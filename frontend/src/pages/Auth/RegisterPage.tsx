@@ -1,84 +1,84 @@
-import React, { useState } from 'react';
-import { handleRequest, MethodEnum } from '../../shared/api';
-import type { BaseResponse } from '../../shared/api';
-import { useNavigate, Link } from 'react-router-dom';
-import { PathEnum } from '../../app/routers/routers.types';
-import styles from './Auth.module.scss';
+import React, { useState } from "react";
+import { handleRequest, MethodEnum } from "../../shared/api";
+import type { BaseResponse } from "../../shared/api";
+import { useNavigate, Link } from "react-router-dom";
+import { PathEnum } from "../../app/routers/routers.types";
+import styles from "./Auth.module.scss";
 
 export const RegisterPage = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate()
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
+	const navigate = useNavigate();
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await handleRequest<BaseResponse, any>({
-                url: '/auth/register',
-                method: MethodEnum.POST,
-                data: { name, email, password },
-            });
-            if (response && response.ok) {
-                navigate(PathEnum.DASHBOARD)
-            } else {
-                setError('Registration failed. Please try again.');
-            }
-        } catch (err: any) {
-            setError(err.message || 'Error registering');
-        }
-    };
+	const handleRegister = async (e: React.FormEvent) => {
+		e.preventDefault();
+		try {
+			const response = await handleRequest<BaseResponse, any>({
+				url: "/auth/register",
+				method: MethodEnum.POST,
+				data: { name, email, password },
+			});
+			if (response && response.ok) {
+				navigate(PathEnum.DASHBOARD);
+			} else {
+				setError("Registration failed. Please try again.");
+			}
+		} catch (err: any) {
+			setError(err.message || "Error registering");
+		}
+	};
 
-    return (
-        <div className={styles.authPage}>
-            <div className={styles.authCard}>
-                <h2>Get started</h2>
-                <p>Create your TabFlowAI account today</p>
+	return (
+		<div className={styles.authPage}>
+			<div className={styles.authCard}>
+				<h2>Get started</h2>
+				<p>Create your TabFlowAI account today</p>
 
-                {error && <div className={styles.error}>{error}</div>}
+				{error && <div className={styles.error}>{error}</div>}
 
-                <form onSubmit={handleRegister} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label>Full Name</label>
-                        <input
-                            type="text"
-                            placeholder="John Doe"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className={styles.inputGroup}>
-                        <label>Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="name@company.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className={styles.inputGroup}>
-                        <label>Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+				<form onSubmit={handleRegister} className={styles.form}>
+					<div className={styles.inputGroup}>
+						<label>Full Name</label>
+						<input
+							type="text"
+							placeholder="John Doe"
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+							required
+						/>
+					</div>
+					<div className={styles.inputGroup}>
+						<label>Email Address</label>
+						<input
+							type="email"
+							placeholder="name@company.com"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							required
+						/>
+					</div>
+					<div className={styles.inputGroup}>
+						<label>Password</label>
+						<input
+							type="password"
+							placeholder="••••••••"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							required
+						/>
+					</div>
 
-                    <button type="submit" className={styles.submitBtn}>
-                        Create account
-                    </button>
-                </form>
+					<button type="submit" className={styles.submitBtn}>
+						Create account
+					</button>
+				</form>
 
-                <div className={styles.footer}>
-                    Already have an account? <Link to="/login">Sign in</Link>
-                </div>
-            </div>
-        </div>
-    );
+				<div className={styles.footer}>
+					Already have an account? <Link to="/login">Sign in</Link>
+				</div>
+			</div>
+		</div>
+	);
 };

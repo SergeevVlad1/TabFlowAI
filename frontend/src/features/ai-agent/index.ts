@@ -1,1 +1,1 @@
-export { aiAgent } from './model/AiAgent';
+export { aiAgent } from "./model/AiAgent";

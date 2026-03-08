@@ -1,199 +1,199 @@
 .taskList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  animation: fadeIn var(--transition-base);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-lg);
+	animation: fadeIn var(--transition-base);
 }
 
 .inputCard {
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  padding: var(--space-md);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	padding: var(--space-md);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
 
-  input[type="text"] {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    padding: 0.85rem 1rem;
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all var(--transition-fast);
+	input[type="text"] {
+		background: var(--input-bg);
+		border: 1px solid var(--border-color);
+		padding: 0.85rem 1rem;
+		border-radius: var(--radius-md);
+		color: var(--text-primary);
+		font-size: 1rem;
+		font-weight: 500;
+		transition: all var(--transition-fast);
 
-    &:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.1);
-      background: var(--input-focus);
-    }
-  }
+		&:focus {
+			outline: none;
+			border-color: var(--primary-color);
+			box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.1);
+			background: var(--input-focus);
+		}
+	}
 
-  .row {
-    display: flex;
-    gap: var(--space-sm);
+	.row {
+		display: flex;
+		gap: var(--space-sm);
 
-    select,
-    input[type="number"] {
-      background: var(--input-bg);
-      border: 1px solid var(--border-color);
-      padding: 0.6rem;
-      border-radius: var(--radius-md);
-      color: var(--text-primary);
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all var(--transition-fast);
+		select,
+		input[type="number"] {
+			background: var(--input-bg);
+			border: 1px solid var(--border-color);
+			padding: 0.6rem;
+			border-radius: var(--radius-md);
+			color: var(--text-primary);
+			font-weight: 600;
+			font-size: 0.85rem;
+			transition: all var(--transition-fast);
 
-      &:focus {
-        outline: none;
-        border-color: var(--primary-color);
-      }
-    }
+			&:focus {
+				outline: none;
+				border-color: var(--primary-color);
+			}
+		}
 
-    button {
-      background: var(--primary-gradient);
-      color: white;
-      border: none;
-      padding: 0 1.5rem;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      cursor: pointer;
-      transition: all var(--transition-base);
-      box-shadow: var(--shadow-premium);
+		button {
+			background: var(--primary-gradient);
+			color: white;
+			border: none;
+			padding: 0 1.5rem;
+			border-radius: var(--radius-md);
+			font-weight: 700;
+			cursor: pointer;
+			transition: all var(--transition-base);
+			box-shadow: var(--shadow-premium);
 
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 20px rgba(124, 77, 255, 0.2);
-      }
-    }
-  }
+			&:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 8px 20px rgba(124, 77, 255, 0.2);
+			}
+		}
+	}
 }
 
 .taskItem {
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-sm);
-  position: relative;
-  overflow: hidden;
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-sm);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	padding: var(--space-md);
+	border-radius: var(--radius-md);
+	margin-bottom: var(--space-sm);
+	position: relative;
+	overflow: hidden;
+	transition: all var(--transition-fast);
+	box-shadow: var(--shadow-sm);
 
-  &:hover {
-    transform: translateX(4px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-color);
-  }
+	&:hover {
+		transform: translateX(4px);
+		box-shadow: var(--shadow-md);
+		border-color: var(--primary-color);
+	}
 
-  &.completed {
-    opacity: 0.6;
-    background: var(--input-bg);
-    .title {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-  }
+	&.completed {
+		opacity: 0.6;
+		background: var(--input-bg);
+		.title {
+			text-decoration: line-through;
+			color: var(--text-muted);
+		}
+	}
 
-  &.running {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-premium);
-  }
+	&.running {
+		border-color: var(--primary-color);
+		box-shadow: var(--shadow-premium);
+	}
 
-  .progressFill {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 100%;
-    background: var(--primary-gradient);
-    opacity: 0.05;
-    transition: width 0.3s ease;
-    z-index: 0;
-  }
+	.progressFill {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 100%;
+		background: var(--primary-gradient);
+		opacity: 0.05;
+		transition: width 0.3s ease;
+		z-index: 0;
+	}
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    position: relative;
-    z-index: 1;
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+		position: relative;
+		z-index: 1;
 
-    .title {
-      font-weight: 700;
-      font-size: 1rem;
-      margin-left: 0.75rem;
-      color: var(--text-primary);
-    }
-  }
+		.title {
+			font-weight: 700;
+			font-size: 1rem;
+			margin-left: 0.75rem;
+			color: var(--text-primary);
+		}
+	}
 
-  .actions {
-    display: flex;
-    gap: 0.5rem;
-    position: relative;
-    z-index: 1;
+	.actions {
+		display: flex;
+		gap: 0.5rem;
+		position: relative;
+		z-index: 1;
 
-    button {
-      background: var(--input-bg);
-      border: 1px solid var(--border-color);
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all var(--transition-fast);
+		button {
+			background: var(--input-bg);
+			border: 1px solid var(--border-color);
+			width: 32px;
+			height: 32px;
+			border-radius: var(--radius-sm);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			color: var(--text-secondary);
+			transition: all var(--transition-fast);
 
-      &:hover {
-        background: var(--surface-color);
-        color: var(--primary-color);
-        border-color: var(--primary-color);
-      }
+			&:hover {
+				background: var(--surface-color);
+				color: var(--primary-color);
+				border-color: var(--primary-color);
+			}
 
-      &.delete:hover {
-        color: var(--danger-color);
-        border-color: var(--danger-color);
-      }
-    }
-  }
+			&.delete:hover {
+				color: var(--danger-color);
+				border-color: var(--danger-color);
+			}
+		}
+	}
 
-  .meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    position: relative;
-    z-index: 1;
+	.meta {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		position: relative;
+		z-index: 1;
 
-    .timer {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+		.timer {
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
 
-      &.active {
-        color: var(--primary-color);
-      }
-    }
-  }
+			&.active {
+				color: var(--primary-color);
+			}
+		}
+	}
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
