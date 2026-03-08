@@ -5,9 +5,8 @@ import { handleRequest, MethodEnum } from "../../../shared/api";
 export interface Task {
 	id: string;
 	title: string;
-	description?: string;
 	priority: "high" | "medium" | "low";
-	deadline?: number; // timestamp
+	time?: number; // timestamp
 	completed: boolean;
 	createdAt: number;
 	estimatedTime: number; // in minutes
@@ -17,13 +16,14 @@ export interface Task {
 
 interface TaskState {
 	tasks: Task[];
+	loading: boolean;
+	error: string | null;
 	activeTaskId: string | null;
-	addTask: (
-		task: Omit<
-			Task,
-			"id" | "createdAt" | "completed" | "timeSpent" | "isRunning"
-		>,
-	) => void;
+	addTask: (taskData: {
+		title: string;
+		priority: string;
+		time: string;
+	}) => Promise<void>;
 	toggleTask: (id: string) => void;
 	deleteTask: (id: string) => void;
 	updateTask: (id: string, updates: Partial<Task>) => void;
@@ -31,7 +31,7 @@ interface TaskState {
 	pauseTask: (id: string) => void;
 	tickTask: (id: string, ms: number) => void;
 	getTasksByPriority: () => Task[];
-	showTasks: () => Promise<void>;
+	fetchTasks: () => Promise<void>;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -39,26 +39,38 @@ export const useTaskStore = create<TaskState>()(
 		(set, get) => ({
 			tasks: [],
 			activeTaskId: null,
+			loading: false,
+			error: "",
+
 			addTask: async (taskData) => {
-				const response = await handleRequest<
-					Task,
-					Omit<
-						Task,
-						| "id"
-						| "createdAt"
-						| "completed"
-						| "timeSpent"
-						| "isRunning"
-					>
-				>({
-					url: "/tasks",
-					method: MethodEnum.POST,
-					data: taskData,
-				});
-				if (response) {
-					set((state) => ({ tasks: [...state.tasks, response] }));
+				set({ loading: true, error: null });
+				try {
+					const response = await handleRequest<
+						{ data: Task },
+						{ title: string; priority: string; time: string }
+					>({
+						url: "/tasks",
+						method: MethodEnum.POST,
+						data: taskData,
+					});
+
+					if (response?.data) {
+						set((state) => ({
+							tasks: [...state.tasks, response.data],
+							loading: false,
+						}));
+					}
+				} catch (error) {
+					set({
+						error:
+							error instanceof Error
+								? error.message
+								: "Failed to add task",
+						loading: false,
+					});
 				}
 			},
+
 			toggleTask: (id) =>
 				set((state) => {
 					const task = state.tasks.find((t) => t.id === id);
@@ -83,21 +95,57 @@ export const useTaskStore = create<TaskState>()(
 						),
 					};
 				}),
-			showTasks: async () => {
-				const response = await handleRequest<Task[]>({
-					url: "/tasks",
-					method: MethodEnum.GET,
-				});
-				if (response) {
-					set({ tasks: response });
+
+			fetchTasks: async () => {
+				set({ loading: true, error: null });
+				try {
+					const response = await handleRequest<{ data: Task[] }>({
+						url: "/tasks",
+						method: MethodEnum.GET,
+					});
+					set({
+						tasks: Array.isArray(response.data)
+							? response.data
+							: [],
+						loading: false,
+					});
+				} catch (error) {
+					set({
+						error:
+							error instanceof Error
+								? error.message
+								: "Failed to fetch",
+						loading: false,
+					});
 				}
 			},
-			deleteTask: (id) =>
-				set((state) => ({
-					tasks: state.tasks.filter((t) => t.id !== id),
-					activeTaskId:
-						state.activeTaskId === id ? null : state.activeTaskId,
-				})),
+			deleteTask: async (id) => {
+				set({ loading: true, error: null });
+				try {
+					await handleRequest({
+						url: `/tasks/${id}`,
+						method: MethodEnum.DELETE,
+					});
+
+					// Update local state: filter out the deleted task and clear activeTaskId if needed
+					set((state) => ({
+						tasks: state.tasks.filter((t) => t.id !== id),
+						activeTaskId:
+							state.activeTaskId === id
+								? null
+								: state.activeTaskId,
+						loading: false,
+					}));
+				} catch (error) {
+					set({
+						error:
+							error instanceof Error
+								? error.message
+								: "Failed to delete task",
+						loading: false,
+					});
+				}
+			},
 			updateTask: (id, updates) =>
 				set((state) => ({
 					tasks: state.tasks.map((t) =>
