@@ -45,11 +45,11 @@ def classify_tabs_view(request):
     The user has selected a focus category: {target_category}
 
     Your task is:
-    1. For each tab, determine if it is related to the category '{target_category}' based on its title and URL (if available).
-    2. If a tab has no URL or an empty URL, base the classification solely on the title.
-    3. If both title and URL are empty or missing, or if the tab cannot be classified, assign it to "unnecessary".
+    1. For each tab, determine if it is related to the category '{target_category}' based on its title and URL (if available and valid).
+    2. If a tab has no URL, an empty URL, or a non-standard/internal URL (e.g., starting with 'chrome://', 'about:', 'file://', etc.), base the classification solely on the title. If the title provides no relevant information or is generic (e.g., 'New Tab'), assign it to "unnecessary".
+    3. If both title and URL are empty, missing, invalid, or provide no useful information, assign it to "unnecessary".
     4. If the tab is not related to '{target_category}', assign it to the category "unnecessary".
-    5. If the tab is related to '{target_category}', analyze its content (based on title and URL if present) and assign it to a meaningful subcategory within '{target_category}'. 
+    5. If the tab is related to '{target_category}', analyze its content (based on title and URL if present and valid) and assign it to a meaningful subcategory within '{target_category}'. 
        - Create subcategories dynamically based on the tabs provided.
        - Use consistent subcategory names for similar tabs (e.g., for 'work': "Emails", "Documents", "Research", "Meetings").
        - Subcategory names should be short, descriptive, and relevant to the main category.

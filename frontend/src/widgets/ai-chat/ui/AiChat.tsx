@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AiChat.module.scss';
 import clsx from 'clsx';
-import { Send, Bot } from 'lucide-react';
+import { Send, Bot, Sparkles, Minus, Maximize2 } from 'lucide-react';
 import { useTaskStore } from '../../../features/tasks/store/taskStore';
 import { useTrackingStore } from '../../../features/tracking/store/trackingStore';
 
@@ -14,10 +14,11 @@ interface Message {
 
 export const AiChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', text: "Hi! I'm your productivity assistant. How can I help you today?", sender: 'ai', timestamp: Date.now() }
+    { id: '1', text: "Hi! I'm your TabAI assistant. How can I help you optimize your flow today?", sender: 'ai', timestamp: Date.now() }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { tasks } = useTaskStore();
@@ -29,7 +30,7 @@ export const AiChat: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -56,60 +57,77 @@ export const AiChat: React.FC = () => {
       };
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);
-    }, 1000);
+    }, 1500);
   };
 
   const generateResponse = (text: string): string => {
     const lower = text.toLowerCase();
-    
+
     if (lower.includes('status') || lower.includes('progress')) {
       const pending = tasks.filter(t => !t.completed).length;
-      return `You have ${pending} pending tasks. ${currentSession ? 'You are currently in a focus session.' : 'You are not tracking time currently.'}`;
+      return `You currently have ${pending} tasks pending. ${currentSession ? "You're doing great in your focus session!" : "Would you like to start a focus timer?"}`;
     }
-    
-    if (lower.includes('suggest') || lower.includes('what should i do')) {
+
+    if (lower.includes('suggest') || lower.includes('do')) {
       const highPri = tasks.find(t => t.priority === 'high' && !t.completed);
-      if (highPri) return `I recommend starting with your high priority task: "${highPri.title}".`;
-      return "You're all caught up on high priority tasks! Maybe take a break or pick a medium priority task.";
+      if (highPri) return `Based on your priority list, I suggest focusing on "${highPri.title}". It's your top goal for today.`;
+      return "You've cleared your high priorities! How about tackling a smaller task or taking a quick 5-minute break?";
     }
 
-    if (lower.includes('hello') || lower.includes('hi')) {
-      return "Hello! Ready to be productive?";
-    }
-
-    return "I'm a simple AI for now. I can help you check your status or suggest tasks. Try asking 'What should I do?' or 'Status'.";
+    return "I'm here to help you manage your tabs and tasks with AI. Ask me for a progress report or task suggestion!";
   };
 
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.messages}>
-        {messages.map(msg => (
-          <div key={msg.id} className={clsx(styles.message, styles[msg.sender])}>
-            {msg.sender === 'ai' && <Bot size={14} style={{marginRight: 4, display: 'inline'}} />}
-            {msg.text}
-          </div>
-        ))}
-        {isTyping && (
-          <div className={clsx(styles.message, styles.ai)}>
-            <span style={{fontStyle: 'italic', fontSize: '0.8rem'}}>Typing...</span>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      
-      <div className={styles.inputArea}>
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Ask AI..."
-          disabled={isTyping}
-        />
-        <button onClick={handleSend} disabled={!input.trim() || isTyping}>
-          <Send size={16} />
+    <div className={clsx(styles.chatContainer, { [styles.minimized]: isMinimized })}>
+      <div className={styles.chatHeader}>
+        <div className={styles.headerTitle}>
+          <Sparkles size={16} />
+          <span>AI Assistant</span>
+        </div>
+        <button className={styles.minimizeBtn} onClick={() => setIsMinimized(!isMinimized)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+          {isMinimized ? <Maximize2 size={16} /> : <Minus size={16} />}
         </button>
       </div>
+
+      {!isMinimized && (
+        <>
+          <div className={styles.messages}>
+            {messages.map(msg => (
+              <div key={msg.id} className={clsx(styles.message, styles[msg.sender])}>
+                {msg.sender === 'ai' && <Bot size={18} className={styles.botIcon} />}
+                <div className={styles.messageContent}>{msg.text}</div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className={clsx(styles.message, styles.ai)}>
+                <Bot size={18} className={styles.botIcon} />
+                <div className={styles.typingIndicator}>
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className={styles.inputArea}>
+            <div className={styles.inputWrapper}>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="Message AI Assistant..."
+                disabled={isTyping}
+              />
+            </div>
+            <button onClick={handleSend} disabled={!input.trim() || isTyping}>
+              <Send size={18} />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import styles from './Layout.module.scss';
 import clsx from 'clsx';
 import { useThemeStore } from '../../../features/theme/store/themeStore';
-import { Moon, Sun, LayoutDashboard, CheckSquare, BarChart3, Settings, Sparkles } from 'lucide-react';
+import { Moon, Sun, LayoutDashboard, CheckSquare, BarChart3, Settings } from 'lucide-react';
 import { AiChat } from '../../ai-chat';
 import { useNavigate } from 'react-router-dom';
 import { PathEnum } from '../../../app/routers/routers.types';
+import { Logo } from '../../../shared/ui/Logo/Logo';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,12 +29,21 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>
-          <div className={styles.logo}>
-            <Sparkles size={20} className={styles.logoIcon} />
+      <header className={styles.header}>
+        <div className={styles.topRow}>
+          <div className={styles.brand}>
+            <Logo size={32} />
+            <span className={styles.brandName}>TabFlow</span>
           </div>
-          <span className={styles.brandName}>TabAi</span>
+
+          <div className={styles.headerActions}>
+            <button className={styles.iconButton} onClick={toggleTheme} title="Toggle Theme">
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
+            <button className={styles.iconButton} title="Settings">
+              <Settings size={18} />
+            </button>
+          </div>
         </div>
 
         <nav className={styles.nav}>
@@ -41,34 +51,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'dashboard' })}
             onClick={() => handleChangeNavigate('dashboard', PathEnum.DASHBOARD)}
           >
-            <LayoutDashboard size={18} />
-            <span>Dashboard</span>
+            <LayoutDashboard size={21} />
+            {/* <span>Dash</span> */}
           </button>
           <button
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'tasks' })}
             onClick={() => handleChangeNavigate('tasks', PathEnum.TASKS)}
           >
-            <CheckSquare size={18} />
-            <span>Tasks</span>
+            <CheckSquare size={21} />
+            {/* <span>Tasks</span> */}
           </button>
           <button
             className={clsx(styles.navItem, { [styles.active]: activeTab === 'stats' })}
             onClick={() => handleChangeNavigate('stats', PathEnum.STATS)}
           >
-            <BarChart3 size={18} />
-            <span>Stats</span>
+            <BarChart3 size={21} />
+            {/* <span>Stats</span> */}
           </button>
         </nav>
-
-        <div className={styles.sidebarFooter}>
-          <button className={styles.iconButton} onClick={toggleTheme}>
-            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-          </button>
-          <button className={styles.iconButton}>
-            <Settings size={18} />
-          </button>
-        </div>
-      </aside>
+      </header>
 
       <main className={styles.main}>
         <div className={styles.contentWrapper}>

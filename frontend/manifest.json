@@ -8,11 +8,14 @@
     "tabGroups",
     "storage",
     "alarms",
-    "activeTab"
+    "activeTab",
+    "sidePanel"
   ],
   "action": {
-    "default_popup": "index.html",
     "default_title": "Open Dashboard"
+  },
+  "side_panel": {
+    "default_path": "index.html"
   },
   "background": {
     "service_worker": "background.js",
