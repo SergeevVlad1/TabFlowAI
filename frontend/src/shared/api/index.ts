@@ -1,4 +1,5 @@
 import axios from "axios";
+import { storage } from "./storage";
 
 export const baseURL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -23,8 +24,8 @@ export const handleRequest = async ({
   data,
   headers,
 }: RequestParams) => {
-  const getFullHeaders = () => {
-    const token = localStorage.getItem("token");
+  const getFullHeaders = async () => {
+    const token = await storage.get("token");
     const defaultHeaders: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -41,7 +42,7 @@ export const handleRequest = async ({
     const response = await axios(baseURL + url, {
       method,
       data,
-      headers: getFullHeaders(),
+      headers: await getFullHeaders(),
     });
 
     // Check for success statuses (200, 201 etc.)
@@ -57,7 +58,7 @@ export const handleRequest = async ({
 
       // Update token if it's in the response (usually on login/register)
       if (response.data.user_token) {
-        localStorage.setItem("token", response.data.user_token);
+        await storage.set("token", response.data.user_token);
       }
       return response.data;
     }

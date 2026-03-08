@@ -1,0 +1,60 @@
+.switch {
+  display: inline-block;
+  position: relative;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color);
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+
+  &::before {
+    content: "";
+    position: absolute;
+    // height: 18px;
+    // width: 18px;
+    // left: 3px;
+    // bottom: 3px;
+    // background-color: white;
+    // border-radius: 50%;
+    // transition: var(--transition-fast);
+    // box-shadow: var(--shadow-sm);
+    height: 14px;
+    width: 14px;
+    left: 5px;
+    bottom: 5px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+    transition: var(--transition-fast);
+  }
+}
+
+.checked {
+  background: var(--primary-gradient);
+}
+
+.checked::before {
+  transform: translateX(20px);
+  background-color: white;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

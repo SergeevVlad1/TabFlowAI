@@ -5,6 +5,7 @@ import { TasksPage } from "../../pages/Tasks/TasksPage";
 import { StatsPage } from "../../pages/Stats/StatsPage";
 import { LoginPage } from "../../pages/Auth/LoginPage";
 import { RegisterPage } from "../../pages/Auth/RegisterPage";
+import { SettingsPage } from "../../pages/Settings/SettingsPage";
 
 interface Router<T> {
     path: PathEnum;
@@ -31,6 +32,10 @@ export const routers: Router<JSX.Element>[] = [
     {
         path: PathEnum.REGISTER,
         element: <RegisterPage />
+    },
+    {
+        path: PathEnum.SETTINGS,
+        element: <SettingsPage />
     }
 ]
 

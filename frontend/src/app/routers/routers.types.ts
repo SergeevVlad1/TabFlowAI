@@ -5,4 +5,5 @@ export enum PathEnum {
   TASK = "/task/:id",
   LOGIN = "/login",
   REGISTER = "/register",
+  SETTINGS = "/settings",
 }
