@@ -27,9 +27,20 @@ export const SettingsPage: React.FC = () => {
 		setAiModel,
 	} = useConfigStore();
 
+	const [name, setName] = useState<string | null>(null);
+	const [email, setEmail] = useState<string | null>(null);
 	const navigate = useNavigate();
-
 	const [isConfirmingLogout, setIsConfirmingLogout] = useState(false);
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+			const storedName = await storage.get("user_fullname");
+			const storedEmail = await storage.get("user_email");
+			setName(storedName);
+			setEmail(storedEmail);
+		};
+		fetchUserData();
+	}, []);
 
 	useEffect(() => {
 		let timer: any;
@@ -64,10 +75,10 @@ export const SettingsPage: React.FC = () => {
 						<div className={styles.avatar}>S</div>
 						<div className={styles.userInfo}>
 							<h3 className={styles.userName}>
-								Sergey Vladimirovich
+								{name}
 							</h3>
 							<p className={styles.userEmail}>
-								sergey@tabflow.ai
+								{email}
 							</p>
 						</div>
 						<span className={styles.proBadge}>PRO</span>
@@ -151,18 +162,48 @@ export const SettingsPage: React.FC = () => {
 											setAiModel(e.target.value as any)
 										}
 									>
-										<option value="gpt-4o">
-											GPT-4o (Самый умный)
+										<option value="gpt-4o" disabled>
+											GPT-4o (Coming Soon)
 										</option>
-										<option value="gpt-3.5-turbo">
-											GPT-3.5 Turbo (Быстрый)
+										<option value="gemini-2.5-flash">
+											Gemini 2.5 Flash (Быстрый)
 										</option>
-										<option value="claude-3-sonnet">
-											Claude 3.5 Sonnet
+										<option value="claude-3-sonnet" disabled>
+											Claude 3.5 Sonnet (PRO)
 										</option>
 									</select>
 								</div>
 							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* Focus & Sound */}
+				<section className={styles.section}>
+					<h2 className={styles.sectionTitle}>Фокус и Звук</h2>
+					<div className={styles.card}>
+						<div className={styles.settingItem}>
+							<div className={styles.labelGroup}>
+								<div className={styles.iconBox}>
+									<Bell size={18} />
+								</div>
+								<div>
+									<div className={styles.labelWithBadge}>
+										<span className={styles.label}>
+											Звуки таймера
+										</span>
+										<span className={styles.soonBadge}>Coming soon</span>
+									</div>
+									<p className={styles.description}>
+										Воспроизводить сигнал по окончании
+									</p>
+								</div>
+							</div>
+							<Switch
+								checked={false}
+								onChange={() => {}}
+								disabled
+							/>
 						</div>
 					</div>
 				</section>
@@ -176,9 +217,12 @@ export const SettingsPage: React.FC = () => {
 								<div className={styles.iconBox}>
 									<Shield size={18} />
 								</div>
-								<span className={styles.label}>
-									Конфиденциальность
-								</span>
+								<div className={styles.labelWithBadge}>
+									<span className={styles.label}>
+										Конфиденциальность
+									</span>
+									<span className={styles.soonBadge}>Coming soon</span>
+								</div>
 							</div>
 							<ChevronRight
 								size={16}
@@ -186,19 +230,21 @@ export const SettingsPage: React.FC = () => {
 							/>
 						</div>
 						<div className={styles.divider} />
-						<div className={styles.navItem}>
+						<div className={styles.helpItem}>
 							<div className={styles.labelGroup}>
 								<div className={styles.iconBox}>
 									<HelpCircle size={18} />
 								</div>
-								<span className={styles.label}>
-									Центр помощи
-								</span>
+								<div>
+									<span className={styles.label}>
+										Центр помощи
+									</span>
+									<p className={styles.helpText}>
+										Нашли баг или есть предложение?<br/>
+										Пишите: <a href="mailto:svv.kaz@gmail.com">svv.kaz@gmail.com</a>
+									</p>
+								</div>
 							</div>
-							<ChevronRight
-								size={16}
-								className={styles.chevron}
-							/>
 						</div>
 					</div>
 				</section>

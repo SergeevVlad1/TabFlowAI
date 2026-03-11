@@ -6,7 +6,7 @@ from .models import Tab, TabGroup, TabSummary, TabSession, Task, User
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'time', 'completed', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'priority', 'time', 'completed', 'estimatedTime', 'timeSpent', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class RegisterSerializer(serializers.ModelSerializer):

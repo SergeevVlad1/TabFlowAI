@@ -4,6 +4,9 @@ import type { BaseResponse } from "../../shared/api";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.scss";
 import { Input } from "../../shared/ui/input/input";
+import { storage } from "../../shared/api/storage";
+import { PathEnum } from "../../app/routers/routers.types";
+import { Logo } from "../../shared/ui/Logo/Logo";
 
 export const LoginPage = () => {
 	const [email, setEmail] = useState("");
@@ -13,6 +16,7 @@ export const LoginPage = () => {
 
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
+
 		try {
 			const response = await handleRequest<BaseResponse, any>({
 				url: "/auth/login",
@@ -20,7 +24,8 @@ export const LoginPage = () => {
 				data: { email, password },
 			});
 			if (response && response.ok) {
-				navigate("/");
+				await storage.set('user_email', email)
+				navigate(PathEnum.DASHBOARD);
 			} else {
 				setError("Login failed. Please check your credentials.");
 			}
@@ -36,6 +41,9 @@ export const LoginPage = () => {
 	return (
 		<div className={styles.authPage}>
 			<div className={styles.authCard}>
+				<div className={styles.logoHeader}>
+					<Logo size={48} />
+				</div>
 				<h2>Welcome back</h2>
 				<p>Log in to your TabFlowAI account</p>
 

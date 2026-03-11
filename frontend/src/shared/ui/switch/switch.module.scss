@@ -27,14 +27,6 @@
 	&::before {
 		content: "";
 		position: absolute;
-		// height: 18px;
-		// width: 18px;
-		// left: 3px;
-		// bottom: 3px;
-		// background-color: white;
-		// border-radius: 50%;
-		// transition: var(--transition-fast);
-		// box-shadow: var(--shadow-sm);
 		height: 14px;
 		width: 14px;
 		left: 5px;
@@ -46,7 +38,7 @@
 }
 
 .checked {
-	background: var(--primary-gradient);
+	background-color: var(--border-color);
 }
 
 .checked::before {

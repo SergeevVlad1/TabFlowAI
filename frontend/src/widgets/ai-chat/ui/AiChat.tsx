@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Send, Bot, Sparkles, Minus, Maximize2 } from "lucide-react";
 import { useTaskStore } from "../../../features/tasks/store/taskStore";
 import { useTrackingStore } from "../../../features/tracking/store/trackingStore";
-import { Input } from "../../../shared/ui/input/input";
 
 interface Message {
 	id: string;
@@ -24,7 +23,7 @@ export const AiChat: React.FC = () => {
 	]);
 	const [input, setInput] = useState("");
 	const [isTyping, setIsTyping] = useState(false);
-	const [isMinimized, setIsMinimized] = useState(false);
+	const [isMinimized, setIsMinimized] = useState(true);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
 	const { tasks } = useTaskStore();
@@ -149,23 +148,23 @@ export const AiChat: React.FC = () => {
 
 						<div className={styles.inputArea}>
 							<div className={styles.inputWrapper}>
-								<Input
+								<input
 									type="text"
 									value={input}
-									onChange={setInput}
+									onChange={(e) => setInput(e.target.value)}
 									onKeyDown={(e) =>
 										e.key === "Enter" && handleSend()
 									}
-									placeholder="Message AI Assistant..."
+									placeholder="Ask anything..."
 									disabled={isTyping}
-									fullWidth
 								/>
 							</div>
 							<button
+								className={styles.sendBtn}
 								onClick={handleSend}
 								disabled={!input.trim() || isTyping}
 							>
-								<Send size={18} />
+								<Send size={16} />
 							</button>
 						</div>
 					</>
@@ -174,3 +173,4 @@ export const AiChat: React.FC = () => {
 		</>
 	);
 };
+

@@ -1,204 +1,114 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, memo, useCallback } from "react";
 import styles from "./TasksPage.module.scss";
-import clsx from "clsx";
-import { Play, Pause, Trash2, CheckCircle, Circle, Clock } from "lucide-react";
-import { useTaskStore } from "../../features/tasks/store/taskStore";
-import { Input } from "../../shared/ui/input/input";
+import { Target, Play } from "lucide-react";
+import { Tasks } from "../../features/tasks/tasks";
+import { useCreateTaskMutation, useTasksQuery } from "../../features/tasks/tasks.hooks";
+import { Popup } from "../../features/tabs/popup/popup";
 
-export const TasksPage: React.FC = () => {
-  const {
-    tasks,
-    loading,
-    error,
-    activeTaskId,
-    addTask,
-    toggleTask,
-    deleteTask,
-    startTask,
-    pauseTask,
-    tickTask,
-    fetchTasks,
-  } = useTaskStore();
+// Extracted Input Section to prevent Task List from re-rendering on every keystroke
+const TaskInputSection = memo(({ onAdd }: { onAdd: (data: { title: string; priority: "high" | "medium" | "low"; estimatedTime: number }) => void }) => {
   const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<"high" | "medium" | "low">(
-    "medium",
-  );
+  const [priority, setPriority] = useState<"high" | "medium" | "low">("medium");
   const [estimatedTime, setEstimatedTime] = useState<string>("25");
 
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
-
-  useEffect(() => {
-    let interval: any;
-    if (activeTaskId) {
-      interval = setInterval(() => {
-        tickTask(activeTaskId, 1000);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [activeTaskId, tickTask]);
-
-  const formatToHHMMSS = (minutesStr: string) => {
-    const totalMinutes = parseInt(minutesStr) || 0;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:00`;
-  };
-
-  const handleAdd = () => {
+  const handleAddSubmit = () => {
     if (!title.trim()) return;
-
-    addTask({
-      title: title,
+    onAdd({
+      title,
       priority,
-      time: formatToHHMMSS(estimatedTime),
+      estimatedTime: parseInt(estimatedTime) || 25,
     });
-
     setTitle("");
     setEstimatedTime("25");
   };
 
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
-  if (loading) {
-    return <div>Loading tasks...</div>;
-  }
-
-  if (error) {
-    console.log(error);
-  }
-
   return (
-    <div className={styles.taskList}>
-      <div className={styles.inputCard}>
-        <Input
-          type="text"
-          value={title}
-          onChange={setTitle}
-          placeholder="What needs to be done?"
-          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          fullWidth
-        />
-        <div className={styles.row}>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as any)}
-            style={{ flex: 1 }}
-          >
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
-          </select>
-          <Input
-            type="number"
-            value={estimatedTime}
-            onChange={setEstimatedTime}
-            placeholder="Min"
-            style={{ width: "80px" }}
-            min="1"
+    <section className={styles.inputSection}>
+      <div className={styles.inputGlass}>
+        <div className={styles.mainInputRow}>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="What needs to be done?"
+            onKeyDown={(e) => e.key === "Enter" && handleAddSubmit()}
+            className={styles.titleInput}
           />
-          <button onClick={handleAdd}>Add</button>
+          <button
+            className={styles.addBtn}
+            onClick={handleAddSubmit}
+            disabled={!title.trim()}
+          >
+            <Play size={18} fill="currentColor" />
+          </button>
+        </div>
+
+        <div className={styles.inputMetaRow}>
+          <div className={styles.metaGroup}>
+            <label>Priority</label>
+            <select
+              className={styles.select}
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as "high" | "medium" | "low")}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+
+          <div className={styles.metaGroup}>
+            <label>Estimate (min)</label>
+            <input
+              type="number"
+              value={estimatedTime}
+              onChange={(e) => setEstimatedTime(e.target.value)}
+              min="1"
+              className={styles.timeInput}
+            />
+          </div>
         </div>
       </div>
-      <div>
-        {Array.isArray(tasks) &&
-          tasks.map((task) => (
-            <div
-              key={task.id}
-              className={clsx(
-                styles.taskItem,
-                styles[task.priority],
-                {
-                  [styles.completed]: task.completed,
-                  [styles.running]: task.isRunning,
-                },
-              )}
-            >
-              <div
-                className={styles.progressFill}
-                style={{
-                  width: `${Math.min(
-                    (task.timeSpent /
-                      (task.estimatedTime * 60 * 1000)) *
-                    100,
-                    100,
-                  )}%`,
-                }}
-              />
-              <div className={styles.header}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    flex: 1,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => toggleTask(task.id)}
-                >
-                  {task.completed ? (
-                    <CheckCircle
-                      size={18}
-                      color="var(--success-color)"
-                    />
-                  ) : (
-                    <Circle size={18} color="#ccc" />
-                  )}
-                  <span className={styles.title}>
-                    {task.title}
-                  </span>
-                </div>
+    </section>
+  );
+});
 
-                <div className={styles.actions}>
-                  {!task.completed &&
-                    (task.isRunning ? (
-                      <button
-                        className={styles.pause}
-                        onClick={() =>
-                          pauseTask(task.id)
-                        }
-                        title="Pause Timer"
-                      >
-                        <Pause size={18} />
-                      </button>
-                    ) : (
-                      <button
-                        className={styles.play}
-                        onClick={() =>
-                          startTask(task.id)
-                        }
-                        title="Start Timer"
-                      >
-                        <Play size={18} />
-                      </button>
-                    ))}
-                  <button
-                    className={styles.delete}
-                    onClick={() => deleteTask(task.id)}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-              <div className={styles.meta}>
-                <span
-                  className={clsx(styles.timer, {
-                    [styles.active]: task.isRunning,
-                  })}
-                >
-                  <Clock size={12} />
-                  {formatTime(task.timeSpent)} /{" "}
-                  {task.estimatedTime}m
-                </span>
-                <span>{task.priority?.toUpperCase()}</span>
-              </div>
+TaskInputSection.displayName = "TaskInputSection";
+
+export const TasksPage: React.FC = () => {
+  const { data: tasks } = useTasksQuery();
+  const { mutate: addTask } = useCreateTaskMutation();
+
+  const handleAddTask = useCallback((data: { title: string; priority: "high" | "medium" | "low"; estimatedTime: number }) => {
+    addTask(data);
+  }, [addTask]);
+
+  return (
+    <div className={styles.tasksPage}>
+      <header className={styles.header}>
+        <h1>Tasks</h1>
+        <p>Organize your day and stay focused</p>
+      </header>
+
+      <section className={styles.focusSection}>
+        <div className={styles.focusCard}>
+          <div className={styles.focusInfo}>
+            <Target size={24} />
+            <div>
+              <h3>Ready to focus?</h3>
+              <p>Organize tabs to block distractions</p>
             </div>
-          ))}
+          </div>
+          <div className={styles.focusAction}>
+            <Popup />
+          </div>
+        </div>
+      </section>
+
+      <TaskInputSection onAdd={handleAddTask} />
+
+      <div className={styles.listSection}>
+        <Tasks tasks={tasks || []} />
       </div>
     </div>
   );

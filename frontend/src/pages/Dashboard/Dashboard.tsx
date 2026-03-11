@@ -4,14 +4,14 @@ import { useAiStore } from "../../features/ai/store/aiStore";
 import { useTaskStore } from "../../features/tasks/store/taskStore";
 import { useTrackingStore } from "../../features/tracking/store/trackingStore";
 import { aiAgent } from "../../features/ai/services/AiAgent";
-import { Sparkles, Play, Flame, CheckCircle2, Clock } from "lucide-react";
+import { Sparkles, Play, Flame, Zap, Target } from "lucide-react";
 import clsx from "clsx";
 import { Popup } from "../../features/tabs/popup/popup";
 
 export const Dashboard: React.FC = () => {
 	const { insights } = useAiStore();
 	const { tasks } = useTaskStore();
-	const { currentSession, getDailyDuration } = useTrackingStore();
+	const { getDailyDuration } = useTrackingStore();
 
 	useEffect(() => {
 		aiAgent.analyze();
@@ -23,123 +23,88 @@ export const Dashboard: React.FC = () => {
 		Array.isArray(tasks) &&
 		tasks.filter((t) => !t.completed && t.priority === "high").length;
 
-	const handleFocusNow = async () => {
-		if (typeof chrome !== "undefined" && chrome.tabs) {
-			await chrome.tabs.query({});
-		}
-	};
-
 	return (
 		<div className={styles.dashboard}>
-			<header className={styles.hero}>
-				<div className={styles.heroContent}>
-					<h1>Welcome back!</h1>
-					<p>Ready to crush your goals today?</p>
+			<header className={styles.header}>
+				<div className={styles.greeting}>
+					<h1>Focus Dashboard</h1>
+					<p>Your productivity at a glance</p>
 				</div>
-				<button className={styles.focusButton} onClick={handleFocusNow}>
-					<Play size={20} fill="currentColor" />
-					<span>Focus Now</span>
-				</button>
+				<div className={styles.quickStats}>
+					<div className={styles.miniStat}>
+						<Flame size={14} className={styles.streakIcon} />
+						<span>2 day streak</span>
+					</div>
+				</div>
 			</header>
 
-			<Popup />
-
-			<div className={styles.grid}>
-				<section className={styles.section}>
-					<h2>
-						<Sparkles size={16} /> AI Insights
-					</h2>
-					<div className={styles.insightList}>
-						{insights.length === 0 ? (
-							<p className={styles.emptyText}>
-								No new insights. You are doing great!
-							</p>
-						) : (
-							insights.slice(0, 3).map((insight) => (
-								<div
-									key={insight.id}
-									className={clsx(
-										styles.insightCard,
-										styles[insight.type],
-									)}
-								>
-									<p>{insight.message}</p>
-									{insight.action && (
-										<button onClick={insight.action}>
-											{insight.actionLabel || "Apply"}
-										</button>
-									)}
-								</div>
-							))
-						)}
-					</div>
-				</section>
-
-				<section className={styles.section}>
-					<h2>
-						<Flame size={16} /> Focus Mode
-					</h2>
-					{currentSession ? (
-						<div className={styles.activeSession}>
-							<div className={styles.timer}>
-								{Math.floor(
-									(Date.now() - currentSession.startTime) /
-										60000,
-								)}
-								m
-							</div>
-							<p>Current: {currentSession.type}</p>
+			<section className={styles.mainAction}>
+				<div className={styles.actionCard}>
+					<div className={styles.actionInfo}>
+						<Target size={24} />
+						<div>
+							<h3>Ready to focus?</h3>
+							<p>Start a session to block distractions</p>
 						</div>
-					) : (
-						<div className={styles.startSession}>
-							<button
-								className={styles.sessionToggle}
-								onClick={() =>
-									useTrackingStore
-										.getState()
-										.startSession("focus")
-								}
-							>
-								Start Pomodoro
-							</button>
-						</div>
-					)}
-				</section>
-			</div>
-
-			<section className={styles.section}>
-				<h2>
-					<CheckCircle2 size={16} /> Daily Overview
-				</h2>
-				<div className={styles.statsGrid}>
-					<div className={styles.statItem}>
-						<span className={styles.value}>{pendingTasks}</span>
-						<span className={styles.label}>Pending</span>
 					</div>
-					<div className={styles.statItem}>
-						<span
-							className={styles.value}
-							style={{ color: "var(--danger-color)" }}
-						>
-							{highPriTasks}
-						</span>
-						<span className={styles.label}>Priority</span>
-					</div>
-					<div className={styles.statItem}>
-						<span className={styles.value}>
-							<Clock
-								size={18}
-								style={{
-									verticalAlign: "middle",
-									marginRight: 4,
-								}}
-							/>
-							{Math.round(getDailyDuration("focus"))}m
-						</span>
-						<span className={styles.label}>Focused</span>
-					</div>
+					<button 
+						className={styles.primaryButton}
+						onClick={() => useTrackingStore.getState().startSession("focus")}
+					>
+						<Play size={18} fill="currentColor" />
+						<span>Start Session</span>
+					</button>
 				</div>
 			</section>
+
+			<div className={styles.statsRow}>
+				<div className={styles.statBox}>
+					<span className={styles.statLabel}>Pending</span>
+					<span className={styles.statValue}>{pendingTasks}</span>
+				</div>
+				<div className={styles.statBox}>
+					<span className={styles.statLabel}>Priority</span>
+					<span className={clsx(styles.statValue, styles.urgent)}>{highPriTasks}</span>
+				</div>
+				<div className={styles.statBox}>
+					<span className={styles.statLabel}>Focused</span>
+					<span className={styles.statValue}>{Math.round(getDailyDuration("focus"))}m</span>
+				</div>
+			</div>
+
+			<section className={styles.insightsSection}>
+				<div className={styles.sectionHeader}>
+					<h2><Sparkles size={16} /> AI Insights</h2>
+					<button className={styles.textLink}>View all</button>
+				</div>
+				<div className={styles.insightList}>
+					{insights.length === 0 ? (
+						<div className={styles.emptyInsights}>
+							<Zap size={20} />
+							<p>Analyze your tabs to get personalized insights</p>
+						</div>
+					) : (
+						insights.slice(0, 2).map((insight) => (
+							<div
+								key={insight.id}
+								className={clsx(styles.insightCard, styles[insight.type])}
+							>
+								<p>{insight.message}</p>
+								{insight.action && (
+									<button onClick={insight.action} className={styles.actionBtn}>
+										{insight.actionLabel || "Take Action"}
+									</button>
+								)}
+							</div>
+						))
+					)}
+				</div>
+			</section>
+
+			<div className={styles.bottomSection}>
+				<Popup />
+			</div>
 		</div>
 	);
 };
+

@@ -4,9 +4,10 @@ import {
 	type CategoryType,
 } from "../../../shared/stores/popup.store";
 import styles from "./popup.module.scss";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { groupTabs } from "./utils/getAllTabs";
+import { useOrganizeTabsMutation } from "../hooks/hook";
 
 export const Popup = () => {
 	const {
@@ -17,9 +18,10 @@ export const Popup = () => {
 		fetchTabs,
 		setModalState,
 		toggleCategory,
-		processTabsWithAI,
 		reset,
 	} = useTabStore();
+
+	const { mutateAsync: organizeTabs } = useOrganizeTabsMutation();
 
 	useEffect(() => {
 		fetchTabs();
@@ -43,7 +45,10 @@ export const Popup = () => {
 
 	const handleGroupTabs = async () => {
 		try {
-			const classifiedTabs = await processTabsWithAI();
+			const classifiedTabs = await organizeTabs({
+				tabs,
+				categories: selectedCategories,
+			});
 			if (classifiedTabs && Array.isArray(classifiedTabs)) {
 				await groupTabs(classifiedTabs);
 			}
@@ -54,32 +59,21 @@ export const Popup = () => {
 
 	return (
 		<div className={styles.popup}>
-			<h3>TabFlow AI</h3>
-			<p>Организуйте свои вкладки с помощью искусственного интеллекта.</p>
-
 			<button
-				className={styles.mainButton}
+				className={styles.primaryButton}
 				onClick={() => setModalState("selecting_param")}
 				disabled={loading || tabs.length === 0}
 			>
-				<Sparkles size={18} />
-				{loading ? "Загрузка..." : "Сгруппировать вкладки"}
+				<Sparkles size={18} fill="currentColor" />
+				{loading ? "Loading..." : "Organize Tabs"}
 			</button>
-
-			<div className={styles.stats}>
-				{loading ? (
-					<Loader2 size={14} className={styles.spin} />
-				) : (
-					<span>Найдено {tabs.length} вкладок</span>
-				)}
-			</div>
 
 			{modalState !== "closed" && (
 				<div className={styles.modalOverlay}>
 					<div className={styles.modalContent}>
 						{modalState === "selecting_param" ? (
 							<>
-								<h4>Выберите категории</h4>
+								<h4>Select Categories</h4>
 								<div className={styles.categoryGrid}>
 									{categories.map((cat) => (
 										<div
@@ -101,7 +95,7 @@ export const Popup = () => {
 										className={styles.cancelBtn}
 										onClick={reset}
 									>
-										Отмена
+										Cancel
 									</button>
 									<button
 										className={styles.confirmBtn}
@@ -110,14 +104,14 @@ export const Popup = () => {
 											selectedCategories.length === 0
 										}
 									>
-										Начать
+										Confirm
 									</button>
 								</div>
 							</>
 						) : (
 							<div className={styles.sendingState}>
 								<div className={styles.loadingSpinner}></div>
-								<p>ИИ анализирует вкладки...</p>
+								<p>AI is analyzing your tabs...</p>
 							</div>
 						)}
 					</div>

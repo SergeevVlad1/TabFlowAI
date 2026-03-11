@@ -120,6 +120,7 @@
 }
 
 .settingItem {
+	position: relative;
 	padding: var(--space-md);
 	display: flex;
 	align-items: center;
@@ -168,6 +169,7 @@
 }
 
 .navItem {
+	position: relative;
 	padding: var(--space-md);
 	display: flex;
 	align-items: center;
@@ -191,20 +193,94 @@
 }
 
 .select {
-	margin-top: 4px;
-	padding: 6px 12px;
-	border-radius: var(--radius-sm);
+	margin-top: 8px;
+	padding: 10px 14px;
+	border-radius: var(--radius-md);
 	border: 1px solid var(--border-color);
 	background-color: var(--input-bg);
 	color: var(--text-primary);
-	font-size: 0.8125rem;
+	font-size: 0.85rem;
+	font-weight: 500;
 	font-family: inherit;
 	outline: none;
 	cursor: pointer;
 	width: 100%;
+	transition: all 0.2s ease;
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
 
 	&:focus {
-		border-color: var(--primary-color);
+		border-color: var(--text-muted);
+		background-color: var(--surface-color);
+	}
+
+	&:hover {
+		border-color: var(--text-muted);
+	}
+
+	option {
+		background-color: var(--surface-color);
+		color: var(--text-primary);
+		padding: 10px;
+		
+		&:disabled {
+			color: var(--text-muted);
+			font-style: italic;
+		}
+	}
+}
+
+.selectSmall {
+	@extend .select;
+	width: auto;
+	margin-top: 0;
+	padding: 4px 28px 4px 10px;
+	font-size: 0.75rem;
+}
+
+.labelWithBadge {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.soonBadge {
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	font-size: 0.6rem;
+	background: var(--input-bg);
+	color: var(--text-muted);
+	padding: 2px 4px;
+	border-radius: 6px;
+	text-transform: uppercase;
+	font-weight: 700;
+	border: 1px solid var(--border-color);
+}
+
+.helpItem {
+	padding: var(--space-md);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.helpText {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	margin: 4px 0 0;
+	line-height: 1.5;
+
+	a {
+		color: var(--primary-color);
+		text-decoration: none;
+		font-weight: 600;
+
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 }
 
@@ -216,24 +292,22 @@
 	width: 100%;
 	padding: 14px 20px;
 	border-radius: var(--radius-md);
-	border: 1px solid rgba(255, 107, 107, 0.2);
+	border: 1px solid rgba(239, 68, 68, 0.2);
 	background: transparent;
-	color: #ff6b6b;
+	color: var(--danger-color);
 	font-weight: 600;
 	font-size: 0.9375rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
-	transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	transition: all 0.2s ease;
 	position: relative;
 	overflow: hidden;
 
 	&:hover {
-		background: rgba(255, 107, 107, 0.08);
-		border-color: #ff6b6b;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(255, 107, 107, 0.15);
+		background: rgba(239, 68, 68, 0.05);
+		border-color: var(--danger-color);
 	}
 
 	&:active {
@@ -241,36 +315,21 @@
 	}
 
 	&.confirming {
-		background: #ff6b6b;
+		background: var(--danger-color);
 		color: white;
-		border-color: #ff6b6b;
-		animation: pulse-danger 1.5s infinite;
-		box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+		border-color: var(--danger-color);
 
 		&:hover {
-			background: #ff5252;
-			border-color: #ff5252;
+			opacity: 0.9;
 		}
 	}
 
 	svg {
-		transition: transform 0.3s var(--transition-base);
+		transition: transform 0.2s ease;
 	}
 
 	&:hover svg {
 		transform: translateX(-2px);
-	}
-}
-
-@keyframes pulse-danger {
-	0% {
-		box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.4);
-	}
-	70% {
-		box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
-	}
-	100% {
-		box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
 	}
 }
 
@@ -280,22 +339,8 @@
 	padding-bottom: var(--space-lg);
 
 	p {
-		font-size: 0.6875rem;
+		font-size: 0.7rem;
 		color: var(--text-muted);
 		letter-spacing: 0.02em;
-	}
-}
-
-[data-theme="dark"] {
-	.card {
-		background-color: #0b1220;
-	}
-
-	.profileCard {
-		background-color: #0b1220;
-	}
-
-	.iconBox {
-		background-color: #161e2d;
 	}
 }

@@ -5,6 +5,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { PathEnum } from "../../app/routers/routers.types";
 import styles from "./Auth.module.scss";
 import { Input } from "../../shared/ui/input/input";
+import { storage } from "../../shared/api/storage";
+import { Logo } from "../../shared/ui/Logo/Logo";
 
 export const RegisterPage = () => {
 	const [name, setName] = useState("");
@@ -22,6 +24,8 @@ export const RegisterPage = () => {
 				data: { name, email, password },
 			});
 			if (response && response.ok) {
+				await storage.set('user_email', email)
+				await storage.set('user_fullname', name)
 				navigate(PathEnum.DASHBOARD);
 			} else {
 				setError("Registration failed. Please try again.");
@@ -34,6 +38,9 @@ export const RegisterPage = () => {
 	return (
 		<div className={styles.authPage}>
 			<div className={styles.authCard}>
+				<div className={styles.logoHeader}>
+					<Logo size={48} />
+				</div>
 				<h2>Get started</h2>
 				<p>Create your TabFlowAI account today</p>
 

@@ -1,15 +1,16 @@
 import { handleRequest, MethodEnum } from "../../../shared/api";
+import type { SimplifiedTab } from "../popup/popup.types";
 
 export const SendTabsToAI = async (
-	tabs: chrome.tabs.Tab[],
+	tabs: SimplifiedTab[],
 	categories: string[],
-) => {
-	const response = await handleRequest({
+): Promise<SimplifiedTab[]> => {
+	const response = await handleRequest<SimplifiedTab[], any>({
 		url: "/tabs/groups",
 		method: MethodEnum.POST,
 		data: {
-			tabs: tabs.map((t) => ({ id: t.id, title: t.title, url: t.url })),
-			categories: categories,
+			tabs,
+			categories,
 		},
 	});
 	return response;

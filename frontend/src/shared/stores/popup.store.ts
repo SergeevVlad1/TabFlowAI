@@ -1,8 +1,5 @@
-// stores/tabStore.ts
 import { create } from "zustand";
 import { getAllTabs } from "../../features/tabs/popup/utils/getAllTabs";
-import { SendTabsToAI } from "../../features/tabs/sendTabsToAi/sendTabsToAi";
-import type { SimplifiedTab } from "../../features/tabs/popup/popup.types";
 
 export type CategoryType =
 	| "work"
@@ -22,7 +19,6 @@ interface TabStore {
 	setModalState: (state: ModalState) => void;
 	toggleCategory: (category: CategoryType) => void;
 	setSelectedCategories: (categories: CategoryType[]) => void;
-	processTabsWithAI: () => Promise<SimplifiedTab[] | void>;
 	reset: () => void;
 }
 
@@ -35,13 +31,11 @@ const DEFAULT_CATEGORIES: CategoryType[] = [
 ];
 
 export const useTabStore = create<TabStore>((set, get) => ({
-	// Начальное состояние
 	tabs: [],
 	loading: false,
 	modalState: "closed",
 	selectedCategories: DEFAULT_CATEGORIES,
 
-	// Методы
 	fetchTabs: async () => {
 		set({ loading: true });
 		try {
@@ -67,34 +61,34 @@ export const useTabStore = create<TabStore>((set, get) => ({
 	setSelectedCategories: (categories) =>
 		set({ selectedCategories: categories }),
 
-	processTabsWithAI: async () => {
-		const { tabs, selectedCategories } = get();
+	// processTabsWithAI: async () => {
+	// 	const { tabs, selectedCategories } = get();
 
-		const simplifiedTabs = tabs
-			.filter((tab) => tab.url !== undefined)
-			.map((tab) => ({
-				id: tab.id,
-				title: tab.title ?? "",
-				url: tab.url ?? "",
-			}));
+	// 	const simplifiedTabs = tabs
+	// 		.filter((tab) => tab.url !== undefined)
+	// 		.map((tab) => ({
+	// 			id: tab.id,
+	// 			title: tab.title ?? "",
+	// 			url: tab.url ?? "",
+	// 		}));
 
-		if (simplifiedTabs.length === 0) {
-			console.warn("No tabs found to process.");
-			return;
-		}
+	// 	if (simplifiedTabs.length === 0) {
+	// 		console.warn("No tabs found to process.");
+	// 		return;
+	// 	}
 
-		set({ modalState: "sending" });
+	// 	set({ modalState: "sending" });
 
-		try {
-			const response = await SendTabsToAI(tabs, selectedCategories);
-			set({ modalState: "closed" });
-			return response;
-		} catch (error) {
-			console.error("Failed to process tabs:", error);
-			set({ modalState: "selecting_param" });
-			throw error;
-		}
-	},
+	// 	try {
+	// 		const response = await SendTabsToAI(tabs, selectedCategories);
+	// 		set({ modalState: "closed" });
+	// 		return response;
+	// 	} catch (error) {
+	// 		console.error("Failed to process tabs:", error);
+	// 		set({ modalState: "selecting_param" });
+	// 		throw error;
+	// 	}
+	// },
 
 	reset: () =>
 		set({

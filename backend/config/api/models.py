@@ -89,10 +89,21 @@ class TabSummary(models.Model):
 
 
 class Task(models.Model):
+    PRIORITY_CHOICES = [
+        ('high', 'High'),
+        ('medium', 'Medium'),
+        ('low', 'Low'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=255)
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     time = models.TimeField(null=True, blank=True)
     completed = models.BooleanField(default=False)
+    
+    # Store estimated time in minutes and time spent in milliseconds
+    estimatedTime = models.IntegerField(default=25)
+    timeSpent = models.IntegerField(default=0)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

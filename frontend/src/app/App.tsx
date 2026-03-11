@@ -14,7 +14,7 @@ function App() {
 		"dashboard" | "tasks" | "stats" | "settings"
 	>("dashboard");
 
-	const queryClient = new QueryClient();
+	const [queryClient] = useState(() => new QueryClient());
 
 	return (
 		<QueryClientProvider client={queryClient}>
