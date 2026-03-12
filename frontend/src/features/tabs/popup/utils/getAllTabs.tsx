@@ -11,7 +11,7 @@ export const getAllTabs = async (): Promise<chrome.tabs.Tab[]> => {
 			// Mock data for development
 			resolve([
 				{ id: 1, title: "Google", url: "https://google.com" },
-				{ id: 2, title: "GitHub", url: "https://github.com" },
+				{ id: 2, title: "extensions", url: "chrome://extensions/" },
 				{
 					id: 3,
 					title: "StackOverflow",

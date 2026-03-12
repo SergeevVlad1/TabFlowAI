@@ -1,8 +1,13 @@
 {
 	"manifest_version": 3,
-	"name": "Productivity AI Agent",
+	"name": "TabFlowAI",
 	"version": "1.0.0",
-	"description": "Smart productivity extension with Task Manager, Tab Control, and AI Insights",
+	"description": "Organize tabs, manage tasks, and boost productivity with smart tab grouping and workflow tools.",
+	"icons": {
+		"16": "icons/TabFlow_16x16.png",
+		"48": "icons/TabFlow_48x48.png",
+		"128": "icons/TabFlow_128x128.png"
+	},
 	"permissions": [
 		"tabs",
 		"tabGroups",

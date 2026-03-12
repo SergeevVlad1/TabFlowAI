@@ -7,14 +7,13 @@ import styles from "./StatsPage.module.scss";
 import { Activity, ShieldCheck, Clock, Zap, ListTodo, CheckCircle2 } from "lucide-react";
 
 export const StatsPage: React.FC = () => {
-	const { sessions, getDailyDuration } = useTrackingStore();
+	const { sessions } = useTrackingStore();
 	const { blockedDomains } = useTabStore();
 	const { data: tasks } = useTasksQuery();
 
 	const activeTaskId = useTaskStore((state) => state.activeTaskId);
 	const startTime = useTaskStore((state) => state.startTime);
 
-	// Local tick for live updates
 	const [, _setTick] = React.useState(0);
 	React.useEffect(() => {
 		let interval: any;
@@ -24,7 +23,7 @@ export const StatsPage: React.FC = () => {
 		return () => clearInterval(interval);
 	}, [activeTaskId]);
 
-	const focusTime = getDailyDuration("focus");
+	// const focusTime = getDailyDuration("focus");
 
 	const totalTasks = tasks?.length || 0;
 	const completedTasks = tasks?.filter(t => t.completed).length || 0;

@@ -1,6 +1,6 @@
 export enum PathEnum {
-	DASHBOARD = "/",
-	TASKS = "/tasks",
+	// DASHBOARD = "/",
+	TASKS = "/",
 	STATS = "/stats",
 	TASK = "/task/:id",
 	LOGIN = "/login",
