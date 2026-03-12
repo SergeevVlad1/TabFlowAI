@@ -26,7 +26,7 @@ export const RegisterPage = () => {
 			if (response && response.ok) {
 				await storage.set('user_email', email)
 				await storage.set('user_fullname', name)
-				navigate(PathEnum.DASHBOARD);
+				navigate(PathEnum.TASKS);
 			} else {
 				setError("Registration failed. Please try again.");
 			}

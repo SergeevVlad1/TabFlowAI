@@ -1,15 +1,43 @@
 import React from "react";
 import { useTrackingStore } from "../../features/tracking/store/trackingStore";
 import { useTabStore } from "../../features/tabs/store/tabStore";
+import { useTaskStore } from "../../features/tasks/store/taskStore";
+import { useTasksQuery } from "../../features/tasks/tasks.hooks";
 import styles from "./StatsPage.module.scss";
-import { Activity, ShieldCheck, Clock, Zap } from "lucide-react";
+import { Activity, ShieldCheck, Clock, Zap, ListTodo, CheckCircle2 } from "lucide-react";
 
 export const StatsPage: React.FC = () => {
 	const { sessions, getDailyDuration } = useTrackingStore();
 	const { blockedDomains } = useTabStore();
+	const { data: tasks } = useTasksQuery();
+
+	const activeTaskId = useTaskStore((state) => state.activeTaskId);
+	const startTime = useTaskStore((state) => state.startTime);
+
+	// Local tick for live updates
+	const [, _setTick] = React.useState(0);
+	React.useEffect(() => {
+		let interval: any;
+		if (activeTaskId) {
+			interval = setInterval(() => _setTick(t => t + 1), 1000);
+		}
+		return () => clearInterval(interval);
+	}, [activeTaskId]);
 
 	const focusTime = getDailyDuration("focus");
-	const breakTime = getDailyDuration("break");
+
+	const totalTasks = tasks?.length || 0;
+	const completedTasks = tasks?.filter(t => t.completed).length || 0;
+
+	const calculateTotalTime = () => {
+		let total = tasks?.reduce((acc, t) => acc + t.timeSpent, 0) || 0;
+		if (activeTaskId && startTime) {
+			total += (Date.now() - startTime);
+		}
+		return total / 1000 / 60; // in minutes
+	};
+
+	const totalTimeSpentMin = calculateTotalTime();
 
 	return (
 		<div className={styles.statsPage}>
@@ -25,10 +53,10 @@ export const StatsPage: React.FC = () => {
 				<div className={styles.statsGrid}>
 					<div className={styles.statItem}>
 						<span className={styles.statLabel}>
-							<Clock size={14} /> Focus Time
+							<Clock size={14} /> Task Time
 						</span>
 						<span className={styles.statValue}>
-							{Math.round(focusTime)}m
+							{Math.floor(totalTimeSpentMin / 60)}h {Math.floor(totalTimeSpentMin % 60)}m
 						</span>
 					</div>
 					<div className={styles.statItem}>
@@ -39,10 +67,22 @@ export const StatsPage: React.FC = () => {
 							{sessions.length}
 						</span>
 					</div>
+
 					<div className={styles.statItem}>
-						<span className={styles.statLabel}>Break Time</span>
+						<span className={styles.statLabel}>
+							<ListTodo size={14} /> Total Tasks
+						</span>
 						<span className={styles.statValue}>
-							{Math.round(breakTime)}m
+							{totalTasks}
+						</span>
+					</div>
+
+					<div className={styles.statItem}>
+						<span className={styles.statLabel}>
+							<CheckCircle2 size={14} /> Completed
+						</span>
+						<span className={styles.statValue}>
+							{completedTasks}
 						</span>
 					</div>
 				</div>

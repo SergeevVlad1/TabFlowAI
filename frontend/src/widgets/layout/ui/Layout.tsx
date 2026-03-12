@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import styles from "./Layout.module.scss";
 import clsx from "clsx";
 import {
-	LayoutDashboard,
 	CheckSquare,
 	BarChart3,
 	Settings,
@@ -15,8 +14,8 @@ import { Logo } from "../../../shared/ui/Logo/Logo";
 
 interface LayoutProps {
 	children: React.ReactNode;
-	activeTab: "dashboard" | "tasks" | "stats" | "settings";
-	onTabChange: (tab: "dashboard" | "tasks" | "stats" | "settings") => void;
+	activeTab: "tasks" | "stats" | "settings";
+	onTabChange: (tab: "tasks" | "stats" | "settings") => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({
@@ -32,7 +31,7 @@ export const Layout: React.FC<LayoutProps> = ({
 	}, [theme]);
 
 	const handleChangeNavigate = (
-		tab: "dashboard" | "tasks" | "stats" | "settings",
+		tab: "tasks" | "stats" | "settings",
 		path: PathEnum,
 	) => {
 		navigate(path);
@@ -44,9 +43,34 @@ export const Layout: React.FC<LayoutProps> = ({
 			<header className={styles.header}>
 				<div className={styles.topRow}>
 					<div className={styles.brand}>
-						<Logo size={32} />
+						<Logo size={28} />
 						<span className={styles.brandName}>TabFlow</span>
 					</div>
+
+					<nav className={styles.navGroup}>
+						<button
+							className={clsx(styles.navLink, {
+								[styles.active]: activeTab === "tasks",
+							})}
+							onClick={() =>
+								handleChangeNavigate("tasks", PathEnum.TASKS)
+							}
+						>
+							<CheckSquare size={18} strokeWidth={2.5} />
+							<span>Tasks</span>
+						</button>
+						<button
+							className={clsx(styles.navLink, {
+								[styles.active]: activeTab === "stats",
+							})}
+							onClick={() =>
+								handleChangeNavigate("stats", PathEnum.STATS)
+							}
+						>
+							<BarChart3 size={18} strokeWidth={2.5} />
+							<span>Stats</span>
+						</button>
+					</nav>
 
 					<div className={styles.headerActions}>
 						<button
@@ -65,45 +89,6 @@ export const Layout: React.FC<LayoutProps> = ({
 						</button>
 					</div>
 				</div>
-
-				<nav className={styles.nav}>
-					<button
-						className={clsx(styles.navItem, {
-							[styles.active]: activeTab === "dashboard",
-						})}
-						onClick={() =>
-							handleChangeNavigate(
-								"dashboard",
-								PathEnum.DASHBOARD,
-							)
-						}
-					>
-						<LayoutDashboard size={21} />
-						{/* <span>Dash</span> */}
-					</button>
-					<button
-						className={clsx(styles.navItem, {
-							[styles.active]: activeTab === "tasks",
-						})}
-						onClick={() =>
-							handleChangeNavigate("tasks", PathEnum.TASKS)
-						}
-					>
-						<CheckSquare size={21} />
-						{/* <span>Tasks</span> */}
-					</button>
-					<button
-						className={clsx(styles.navItem, {
-							[styles.active]: activeTab === "stats",
-						})}
-						onClick={() =>
-							handleChangeNavigate("stats", PathEnum.STATS)
-						}
-					>
-						<BarChart3 size={21} />
-						{/* <span>Stats</span> */}
-					</button>
-				</nav>
 			</header>
 
 			<main className={styles.main}>

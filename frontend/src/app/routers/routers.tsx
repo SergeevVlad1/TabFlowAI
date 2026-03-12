@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 import { PathEnum } from "./routers.types";
-import { Dashboard } from "../../pages/Dashboard/Dashboard";
+// import { Dashboard } from "../../pages/Dashboard/Dashboard";
 import { TasksPage } from "../../pages/Tasks/TasksPage";
 import { StatsPage } from "../../pages/Stats/StatsPage";
 import { LoginPage } from "../../pages/Auth/LoginPage";
@@ -13,10 +13,10 @@ interface Router<T> {
 }
 
 export const routers: Router<JSX.Element>[] = [
-	{
-		path: PathEnum.DASHBOARD,
-		element: <Dashboard />,
-	},
+	// {
+	// 	path: PathEnum.DASHBOARD,
+	// 	element: <Dashboard />,
+	// },
 	{
 		path: PathEnum.TASKS,
 		element: <TasksPage />,

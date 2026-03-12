@@ -1,9 +1,10 @@
-import React, { useState, memo, useCallback } from "react";
+import React, { useState, useEffect, memo, useCallback } from "react";
 import styles from "./TasksPage.module.scss";
 import { Target, Play } from "lucide-react";
 import { Tasks } from "../../features/tasks/tasks";
-import { useCreateTaskMutation, useTasksQuery } from "../../features/tasks/tasks.hooks";
+import { useTasksQuery, useCreateTaskMutation } from "../../features/tasks/tasks.hooks";
 import { Popup } from "../../features/tabs/popup/popup";
+import { type Task, useTaskStore } from "../../features/tasks/store/taskStore";
 
 // Extracted Input Section to prevent Task List from re-rendering on every keystroke
 const TaskInputSection = memo(({ onAdd }: { onAdd: (data: { title: string; priority: "high" | "medium" | "low"; estimatedTime: number }) => void }) => {
@@ -75,6 +76,46 @@ const TaskInputSection = memo(({ onAdd }: { onAdd: (data: { title: string; prior
 
 TaskInputSection.displayName = "TaskInputSection";
 
+const TasksSummary = memo(({ tasks }: { tasks: Task[] }) => {
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+
+  const activeTaskId = useTaskStore((state) => state.activeTaskId);
+
+  // We need a local tick to force re-render for live time updates
+  const [, _setTick] = useState(0);
+  useEffect(() => {
+    let interval: any;
+    if (activeTaskId) {
+      interval = setInterval(() => {
+        _setTick(t => t + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [activeTaskId]);
+
+  const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  return (
+    <div className={styles.summaryContainer}>
+      <div className={styles.progressContainer}>
+        <div className={styles.progressHeader}>
+          <span>Daily Progress</span>
+          <span className={styles.percentage}>{completionPercentage}%</span>
+        </div>
+        <div className={styles.progressBarTrack}>
+          <div
+            className={styles.progressBarFill}
+            style={{ width: `${completionPercentage}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+});
+
+TasksSummary.displayName = "TasksSummary";
+
 export const TasksPage: React.FC = () => {
   const { data: tasks } = useTasksQuery();
   const { mutate: addTask } = useCreateTaskMutation();
@@ -85,6 +126,8 @@ export const TasksPage: React.FC = () => {
 
   return (
     <div className={styles.tasksPage}>
+      <TasksSummary tasks={tasks || []} />
+
       <header className={styles.header}>
         <h1>Tasks</h1>
         <p>Organize your day and stay focused</p>

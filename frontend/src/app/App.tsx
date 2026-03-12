@@ -11,8 +11,8 @@ import { ProtectedRoute } from "./routers/protectedRoute";
 
 function App() {
 	const [activeTab, setActiveTab] = useState<
-		"dashboard" | "tasks" | "stats" | "settings"
-	>("dashboard");
+		"tasks" | "stats" | "settings"
+	>("tasks");
 
 	const [queryClient] = useState(() => new QueryClient());
 

@@ -72,7 +72,7 @@ export const SettingsPage: React.FC = () => {
 				{/* User Section */}
 				<section className={styles.section}>
 					<div className={styles.profileCard}>
-						<div className={styles.avatar}>S</div>
+						<div className={styles.avatar}>{name?.[0]}</div>
 						<div className={styles.userInfo}>
 							<h3 className={styles.userName}>
 								{name}

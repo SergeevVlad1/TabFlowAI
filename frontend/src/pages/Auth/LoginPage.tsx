@@ -25,7 +25,7 @@ export const LoginPage = () => {
 			});
 			if (response && response.ok) {
 				await storage.set('user_email', email)
-				navigate(PathEnum.DASHBOARD);
+				navigate(PathEnum.TASKS);
 			} else {
 				setError("Login failed. Please check your credentials.");
 			}

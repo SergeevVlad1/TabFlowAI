@@ -2,7 +2,8 @@
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
-	width: 380px;
+	width: 100%;
+	min-width: 320px;
 	background-color: var(--bg-color);
 	color: var(--text-primary);
 	overflow: hidden;
@@ -12,7 +13,7 @@
 .header {
 	background: var(--bg-color);
 	border-bottom: 1px solid var(--border-color);
-	padding: var(--space-sm) var(--space-sm) 0;
+	padding: var(--space-sm) var(--space-md);
 	z-index: 20;
 }
 
@@ -20,19 +21,65 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding-bottom: var(--space-xs);
 }
 
 .brand {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: 10px;
 
 	.brandName {
-		font-size: 1rem;
+		font-size: 0.95rem;
 		font-weight: 700;
 		letter-spacing: -0.02em;
 		color: var(--text-primary);
+		// Hide text on very small widths if needed, but for now keep it
+	}
+}
+
+.navGroup {
+	display: flex;
+	background: var(--input-bg);
+	padding: 4px;
+	border-radius: var(--radius-lg);
+	gap: 4px;
+}
+
+.navLink {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border-radius: var(--radius-md);
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--text-secondary);
+	transition: all var(--transition-base);
+
+	svg {
+		opacity: 0.7;
+	}
+
+	&:hover {
+		color: var(--text-primary);
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	&.active {
+		color: var(--primary-color);
+		background: var(--surface-color);
+		box-shadow: var(--shadow-sm);
+
+		svg {
+			opacity: 1;
+		}
+	}
+
+	span {
+		// Optional: hide labels on small screens
+		@media (max-width: 360px) {
+			display: none;
+		}
 	}
 }
 
@@ -41,62 +88,24 @@
 	gap: 8px;
 }
 
-.nav {
-	display: flex;
-	border-bottom: 1px solid transparent;
-}
-
-.navItem {
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 12px 0;
-	color: var(--text-muted);
-	transition: all var(--transition-fast);
-	position: relative;
-
-	svg {
-		min-width: 20px;
-		opacity: 0.8;
-	}
-
-	&::after {
-		content: "";
-		position: absolute;
-		bottom: -1px;
-		left: 0;
-		right: 0;
-		height: 2px;
-		background: var(--primary-color);
-		transform: scaleX(0);
-		transition: transform 0.2s ease;
-	}
+.iconButton {
+	width: 34px;
+	height: 34px;
+	border-radius: var(--radius-md);
+	color: var(--text-secondary);
+	background: var(--input-bg);
+	border: 1px solid transparent;
 
 	&:hover {
+		background: var(--surface-color);
 		color: var(--text-primary);
-		svg { opacity: 1; }
+		border-color: var(--border-color);
 	}
 
 	&.active {
-		color: var(--text-primary);
-		svg { opacity: 1; }
-		
-		&::after {
-			transform: scaleX(1);
-		}
-	}
-}
-
-.iconButton {
-	width: 30px;
-	height: 30px;
-	border-radius: var(--radius-sm);
-	color: var(--text-secondary);
-	
-	&:hover {
+		color: var(--primary-color);
+		border-color: var(--primary-color);
 		background: var(--input-bg);
-		color: var(--text-primary);
 	}
 }
 
@@ -111,7 +120,7 @@
 
 .contentWrapper {
 	flex: 1;
-	padding-bottom: 60px; // Space for AI chat when minimized
+	padding-bottom: 60px;
 	overflow-y: auto;
 }
 

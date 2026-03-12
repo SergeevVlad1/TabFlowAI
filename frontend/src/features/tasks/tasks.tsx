@@ -11,19 +11,17 @@ import {
 } from "./tasks.hooks";
 import { Timer } from "../timer/timer";
 
-// Sub-component for individual Task Item to localize re-renders
-const TaskItem = memo(({ 
-    task, 
-    onToggle, 
-    onDelete, 
-    onUpdate 
-}: { 
-    task: Task; 
+const TaskItem = memo(({
+    task,
+    onToggle,
+    onDelete,
+    onUpdate
+}: {
+    task: Task;
     onToggle: (id: string, completed: boolean) => void;
     onDelete: (id: string, isRunning: boolean) => void;
     onUpdate: (id: string, spentTime: number) => void;
 }) => {
-    // Localize store subscriptions to this item
     const activeTaskId = useTaskStore((state) => state.activeTaskId);
     const startTime = useTaskStore((state) => state.startTime);
     const baseTime = useTaskStore((state) => state.baseTime);
@@ -33,7 +31,6 @@ const TaskItem = memo(({
     const isRunning = activeTaskId === task.id;
     const [, _setLocalTick] = useState(0);
 
-    // Only this specific Active task item will tick
     useEffect(() => {
         let interval: any;
         if (isRunning) {
@@ -44,7 +41,6 @@ const TaskItem = memo(({
         return () => clearInterval(interval);
     }, [isRunning]);
 
-    // Calculate dynamic values for progress and timer
     const spentSoFar = isRunning && startTime
         ? (baseTime || 0) + (Date.now() - startTime)
         : task.timeSpent;
@@ -57,6 +53,11 @@ const TaskItem = memo(({
         pauseTask();
         onUpdate(task.id, exactSpent);
     };
+
+    const handleToggle = () => {
+        onToggle(task.id, !task.completed);
+        handlePause();
+    }
 
     return (
         <div
@@ -76,7 +77,7 @@ const TaskItem = memo(({
                         className={clsx(styles.checkBtn, {
                             [styles.completedIcon]: task.completed,
                         })}
-                        onClick={() => onToggle(task.id, !task.completed)}
+                        onClick={handleToggle}
                     >
                         {task.completed ? <CheckCircle size={18} /> : <Circle size={18} />}
                     </button>
@@ -105,8 +106,8 @@ const TaskItem = memo(({
             <div className={styles.meta}>
                 <div className={clsx(styles.timer, { [styles.active]: isRunning })}>
                     <Clock size={12} />
-                    <Timer 
-                        spentSoFar={spentSoFar} 
+                    <Timer
+                        spentSoFar={spentSoFar}
                         estimatedTime={task.estimatedTime}
                     />
                 </div>
@@ -125,8 +126,7 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
     const { mutate: deleteTask } = useDeleteTaskMutation();
     const { mutate: toggleTask } = useToggleTaskMutation();
     const { mutate: updateTaskData } = useUpdateTaskMutation();
-    
-    // Actions wrapped in callbacks for memoization
+
     const handleToggle = React.useCallback((id: string, completed: boolean) => {
         toggleTask({ id, completed });
     }, [toggleTask]);
@@ -145,9 +145,9 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
     return (
         <div className={styles.tasksContainer}>
             {tasks.map((task) => (
-                <TaskItem 
-                    key={task.id} 
-                    task={task} 
+                <TaskItem
+                    key={task.id}
+                    task={task}
                     onToggle={handleToggle}
                     onDelete={handleDelete}
                     onUpdate={handleUpdate}

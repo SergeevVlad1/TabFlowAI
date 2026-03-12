@@ -46,10 +46,10 @@ export const getTask = async (id: string): Promise<Task> => {
 };
 
 export const toggleTask = async (id: string, completed: boolean) => {
-	const response = await handleRequest<{ data: boolean }, boolean>({
+	const response = await handleRequest<{ data: Task }, { completed: boolean }>({
 		url: `/task/${id}`,
 		method: MethodEnum.PATCH,
-		data: completed,
+		data: { completed },
 	});
 	return response.data;
 };
