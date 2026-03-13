@@ -4,212 +4,93 @@ export interface Task {
 	id: string;
 	title: string;
 	priority: "high" | "medium" | "low";
-	time?: number; // timestamp
+	time?: number;
 	completed: boolean;
 	createdAt: number;
-	estimatedTime: number; // in minutes
-	timeSpent: number; // in milliseconds
+	estimatedTime: number; // minutes
+	timeSpent: number;     // milliseconds (last value synced to DB)
 	isRunning: boolean;
-	
 }
 
+// ─── chrome.storage.local helpers ────────────────────────────────────────────
+// We store only 3 numbers: activeTaskId + startTime + baseTime.
+// No server calls, no polling — just a single local write on Play/Pause.
+
+const TIMER_STORAGE_KEY = "tabflow_active_timer";
+
+export interface PersistedTimerState {
+	activeTaskId: string;
+	startTime:    number; // epoch ms — when Play was pressed
+	baseTime:     number; // ms already accumulated before this session
+}
+
+/**
+ * Write the active timer session to chrome.storage.local.
+ * Pass `null` to clear it (after Pause / task completion).
+ */
+export function persistTimerToStorage(state: PersistedTimerState | null): void {
+	if (typeof chrome === "undefined" || !chrome.storage) return;
+	if (state === null) {
+		chrome.storage.local.remove(TIMER_STORAGE_KEY);
+	} else {
+		chrome.storage.local.set({ [TIMER_STORAGE_KEY]: state });
+	}
+}
+
+/**
+ * Read the persisted timer state.
+ * Called ONCE in main.tsx before the React tree is rendered,
+ * so every component already sees the correct timer on first paint.
+ */
+export function loadTimerFromStorage(): Promise<PersistedTimerState | null> {
+	return new Promise((resolve) => {
+		if (typeof chrome === "undefined" || !chrome.storage) {
+			resolve(null);
+			return;
+		}
+		chrome.storage.local.get([TIMER_STORAGE_KEY], (result) => {
+			resolve((result[TIMER_STORAGE_KEY] as PersistedTimerState) ?? null);
+		});
+	});
+}
+
+// ─── Zustand store ────────────────────────────────────────────────────────────
+
 interface TaskState {
-	tasks: Task[];
-	loading: boolean;
-	error: string | null;
+	tasks:        Task[];
+	loading:      boolean;
+	error:        string | null;
+
+	// Timer fields — populated by main.tsx hydration OR by startTask()
 	activeTaskId: string | null;
-	startTime?: number | null;
-	baseTime?: number
-	
-	// addTask: (taskData: {
-	// 	title: string;
-	// 	priority: string;
-	// 	time: string;
-	// }) => Promise<void>;
-	// toggleTask: (id: string) => void;
-	// deleteTask: (id: string) => void;
-	// updateTask: (id: string, updates: Partial<Task>) => void;
-	// startTask: (id: string) => void;
-	// pauseTask: (id: string) => void;
-	// tickTask: (id: string, ms: number) => void;
-	startTask: (id: string, currentSpent: number | null) => void;
+	startTime:    number | null; // epoch ms when Play was pressed this session
+	baseTime:     number;        // ms already accumulated before this session
+
+	startTask: (id: string, currentSpent: number) => void;
 	pauseTask: () => void;
 }
 
 export const useTaskStore = create<TaskState>((set) => ({
-	tasks: [],
+	tasks:        [],
 	activeTaskId: null,
-	startTime: null,
-	baseTime: 0,
-	loading: false,
-	error: "",
+	startTime:    null,
+	baseTime:     0,
+	loading:      false,
+	error:        null,
 
 	startTask: (id, currentSpent) => {
-		set({
-			activeTaskId: id,
-			startTime: Date.now(),
-			baseTime: currentSpent ?? 0,
-		});
+		const startTime = Date.now();
+		const baseTime  = currentSpent ?? 0;
+		set({ activeTaskId: id, startTime, baseTime });
+
+		// Single write to local storage — no server request
+		persistTimerToStorage({ activeTaskId: id, startTime, baseTime });
 	},
 
 	pauseTask: () => {
-		set({
-			activeTaskId: null,
-			startTime: null,
-			baseTime: 0,
-		});
+		set({ activeTaskId: null, startTime: null, baseTime: 0 });
+
+		// Clear the persisted session — nothing is running any more
+		persistTimerToStorage(null);
 	},
-
-	// addTask: async (taskData) => {
-	// 	set({ loading: true, error: null });
-	// 	try {
-	// 		const response = await handleRequest<
-	// 			{ data: Task },
-	// 			{ title: string; priority: string; time: string }
-	// 		>({
-	// 			url: "/tasks",
-	// 			method: MethodEnum.POST,
-	// 			data: taskData,
-	// 		});
-
-	// 		if (response?.data) {
-	// 			set((state) => ({
-	// 				tasks: [...state.tasks, response.data],
-	// 				loading: false,
-	// 			}));
-	// 		}
-	// 	} catch (error) {
-	// 		set({
-	// 			error:
-	// 				error instanceof Error
-	// 					? error.message
-	// 					: "Failed to add task",
-	// 			loading: false,
-	// 		});
-	// 	}
-	// },
-
-	// toggleTask: (id) =>
-	// 	set((state) => {
-	// 		const task = state.tasks.find((t) => t.id === id);
-	// 		const newCompleted = !task?.completed;
-	// 		const isNowActive = state.activeTaskId === id;
-
-	// 		return {
-	// 			activeTaskId:
-	// 				isNowActive && newCompleted ? null : state.activeTaskId,
-	// 			tasks: state.tasks.map((t) =>
-	// 				t.id === id
-	// 					? {
-	// 							...t,
-	// 							completed: newCompleted,
-	// 							isRunning: newCompleted ? false : t.isRunning,
-	// 						}
-	// 					: t,
-	// 			),
-	// 		};
-	// 	}),
-
-	// fetchTasks: async () => {
-	// 	set({ loading: true, error: null });
-	// 	try {
-	// 		const response = await handleRequest<{ data: Task[] }>({
-	// 			url: "/tasks",
-	// 			method: MethodEnum.GET,
-	// 		});
-	// 		set({
-	// 			tasks: Array.isArray(response.data) ? response.data : [],
-	// 			loading: false,
-	// 		});
-	// 	} catch (error) {
-	// 		set({
-	// 			error:
-	// 				error instanceof Error ? error.message : "Failed to fetch",
-	// 			loading: false,
-	// 		});
-	// 	}
-	// },
-	// deleteTask: async (id) => {
-	// 	set({ loading: true, error: null });
-	// 	try {
-	// 		await handleRequest({
-	// 			url: `/tasks/${id}`,
-	// 			method: MethodEnum.DELETE,
-	// 		});
-
-	// 		// Update local state: filter out the deleted task and clear activeTaskId if needed
-	// 		set((state) => ({
-	// 			tasks: state.tasks.filter((t) => t.id !== id),
-	// 			activeTaskId:
-	// 				state.activeTaskId === id ? null : state.activeTaskId,
-	// 			loading: false,
-	// 		}));
-	// 	} catch (error) {
-	// 		set({
-	// 			error:
-	// 				error instanceof Error
-	// 					? error.message
-	// 					: "Failed to delete task",
-	// 			loading: false,
-	// 		});
-	// 	}
-	// },
-	// updateTask: (id, updates) =>
-	// 	set((state) => ({
-	// 		tasks: state.tasks.map((t) =>
-	// 			t.id === id ? { ...t, ...updates } : t,
-	// 		),
-	// 	})),
-	// startTask: (id) =>
-	// 	set((state) => ({
-	// 		activeTaskId: id,
-	// 		tasks: state.tasks.map((t) =>
-	// 			// Pause others, start this one
-	// 			t.id === id
-	// 				? { ...t, isRunning: true }
-	// 				: { ...t, isRunning: false },
-	// 		),
-	// 	})),
-	// pauseTask: (id) =>
-	// 	set((state) => ({
-	// 		activeTaskId: null,
-	// 		tasks: state.tasks.map((t) =>
-	// 			t.id === id ? { ...t, isRunning: false } : t,
-	// 		),
-	// 	})),
-	// tickTask: (id, ms) =>
-	// 	set((state) => {
-	// 		const tasks = state.tasks.map((t) => {
-	// 			if (t.id === id) {
-	// 				const newTimeSpent = t.timeSpent + ms;
-	// 				const limitMs = t.estimatedTime * 60 * 1000;
-
-	// 				// If we reached or exceeded the limit, stop the timer
-	// 				if (newTimeSpent >= limitMs) {
-	// 					return {
-	// 						...t,
-	// 						timeSpent: limitMs,
-	// 						isRunning: false,
-	// 					};
-	// 				}
-	// 				return { ...t, timeSpent: newTimeSpent };
-	// 			}
-	// 			return t;
-	// 		});
-
-	// 		// If the task was stopped because it reached the limit, clear activeTaskId
-	// 		const updatedTask = tasks.find((t) => t.id === id);
-	// 		const activeTaskId =
-	// 			updatedTask && !updatedTask.isRunning
-	// 				? null
-	// 				: state.activeTaskId;
-
-	// 		return { tasks, activeTaskId };
-	// 	}),
-	// getTasksByPriority: () => {
-	// 	const priorityOrder = { high: 0, medium: 1, low: 2 };
-	// 	return [...get().tasks].sort(
-	// 		(a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
-	// 	);
-	// },
 }));

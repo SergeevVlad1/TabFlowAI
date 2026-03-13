@@ -2,3 +2,10 @@ django
 djangorestframework
 django-cors-headers
 python-dotenv
+celery
+redis
+djangorestframework-simplejwt
+google-generativeai
+openai
+python-multipart
+google-genai

@@ -11,59 +11,71 @@ import {
 } from "./tasks.hooks";
 import { Timer } from "../timer/timer";
 
+// ─── TaskItem ─────────────────────────────────────────────────────────────────
+
 const TaskItem = memo(({
     task,
     onToggle,
     onDelete,
-    onUpdate
+    onUpdate,
 }: {
     task: Task;
     onToggle: (id: string, completed: boolean) => void;
     onDelete: (id: string, isRunning: boolean) => void;
     onUpdate: (id: string, spentTime: number) => void;
 }) => {
-    const activeTaskId = useTaskStore((state) => state.activeTaskId);
-    const startTime = useTaskStore((state) => state.startTime);
-    const baseTime = useTaskStore((state) => state.baseTime);
-    const startTask = useTaskStore((state) => state.startTask);
-    const pauseTask = useTaskStore((state) => state.pauseTask);
+    const activeTaskId = useTaskStore((s) => s.activeTaskId);
+    const startTime    = useTaskStore((s) => s.startTime);
+    const baseTime     = useTaskStore((s) => s.baseTime);
+    const startTask    = useTaskStore((s) => s.startTask);
+    const pauseTask    = useTaskStore((s) => s.pauseTask);
 
     const isRunning = activeTaskId === task.id;
-    const [, _setLocalTick] = useState(0);
 
+    // UI-tick: re-renders every second so the displayed time stays live.
+    // Actual elapsed time is always Date.now()-startTime (no drift).
+    const [, setTick] = useState(0);
     useEffect(() => {
-        let interval: any;
-        if (isRunning) {
-            interval = setInterval(() => {
-                _setLocalTick((t) => t + 1);
-            }, 1000);
-        }
-        return () => clearInterval(interval);
+        if (!isRunning) return;
+        const id = setInterval(() => setTick((t) => t + 1), 1000);
+        return () => clearInterval(id);
     }, [isRunning]);
 
-    const spentSoFar = isRunning && startTime
-        ? (baseTime || 0) + (Date.now() - startTime)
-        : task.timeSpent;
+    // Compute elapsed ms:
+    //  • Running  → live calculation from stored startTime (works after reopen)
+    //  • Paused   → use the value that was last synced to the DB
+    const spentSoFar: number =
+        isRunning && startTime != null
+            ? (baseTime ?? 0) + (Date.now() - startTime)
+            : task.timeSpent;
 
-    const limitMs = task.estimatedTime * 60 * 1000;
+    const limitMs  = task.estimatedTime * 60 * 1000;
     const progress = Math.min((spentSoFar / limitMs) * 100 || 0, 100);
 
+    // Capture startTime in a local variable BEFORE calling pauseTask()
+    // so we don't lose it when the store resets.
     const handlePause = () => {
-        const exactSpent = task.timeSpent + (Date.now() - (startTime || 0));
+        const capturedStart = startTime;
+        const exactSpent =
+            capturedStart != null
+                ? (baseTime ?? 0) + (Date.now() - capturedStart)
+                : task.timeSpent;
+
         pauseTask();
+        // Only one server request — on pause, not every tick
         onUpdate(task.id, exactSpent);
     };
 
     const handleToggle = () => {
+        if (isRunning) handlePause();
         onToggle(task.id, !task.completed);
-        handlePause();
-    }
+    };
 
     return (
         <div
             className={clsx(styles.taskItem, {
                 [styles.completed]: task.completed,
-                [styles.running]: isRunning,
+                [styles.running]:   isRunning,
             })}
         >
             <div
@@ -79,7 +91,9 @@ const TaskItem = memo(({
                         })}
                         onClick={handleToggle}
                     >
-                        {task.completed ? <CheckCircle size={18} /> : <Circle size={18} />}
+                        {task.completed
+                            ? <CheckCircle size={18} />
+                            : <Circle size={18} />}
                     </button>
                     <span className={styles.title}>{task.title}</span>
                 </div>
@@ -88,7 +102,9 @@ const TaskItem = memo(({
                     {!task.completed && (
                         <button
                             onClick={() =>
-                                isRunning ? handlePause() : startTask(task.id, task.timeSpent)
+                                isRunning
+                                    ? handlePause()
+                                    : startTask(task.id, task.timeSpent)
                             }
                         >
                             {isRunning ? <Pause size={14} /> : <Play size={14} />}
@@ -106,10 +122,7 @@ const TaskItem = memo(({
             <div className={styles.meta}>
                 <div className={clsx(styles.timer, { [styles.active]: isRunning })}>
                     <Clock size={12} />
-                    <Timer
-                        spentSoFar={spentSoFar}
-                        estimatedTime={task.estimatedTime}
-                    />
+                    <Timer spentSoFar={spentSoFar} estimatedTime={task.estimatedTime} />
                 </div>
                 <div className={clsx(styles.priority, styles[task.priority])}>
                     {task.priority}
@@ -121,23 +134,31 @@ const TaskItem = memo(({
 
 TaskItem.displayName = "TaskItem";
 
+// ─── Tasks list ───────────────────────────────────────────────────────────────
+
 export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
     const { isLoading, error } = useTasksQuery();
-    const { mutate: deleteTask } = useDeleteTaskMutation();
-    const { mutate: toggleTask } = useToggleTaskMutation();
+    const { mutate: deleteTask }     = useDeleteTaskMutation();
+    const { mutate: toggleTask }     = useToggleTaskMutation();
     const { mutate: updateTaskData } = useUpdateTaskMutation();
 
-    const handleToggle = React.useCallback((id: string, completed: boolean) => {
-        toggleTask({ id, completed });
-    }, [toggleTask]);
+    // No hydrateTimer here — it is done in main.tsx before the first render.
 
-    const handleDelete = React.useCallback((id: string) => {
-        deleteTask(id);
-    }, [deleteTask]);
+    const handleToggle = React.useCallback(
+        (id: string, completed: boolean) => toggleTask({ id, completed }),
+        [toggleTask],
+    );
 
-    const handleUpdate = React.useCallback((id: string, timeSpent: number) => {
-        updateTaskData({ id, taskData: { timeSpent } });
-    }, [updateTaskData]);
+    const handleDelete = React.useCallback(
+        (id: string) => deleteTask(id),
+        [deleteTask],
+    );
+
+    const handleUpdate = React.useCallback(
+        (id: string, timeSpent: number) =>
+            updateTaskData({ id, taskData: { timeSpent } }),
+        [updateTaskData],
+    );
 
     if (isLoading) return <div className={styles.loading}>Loading tasks...</div>;
     if (error) return null;
@@ -156,3 +177,5 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
         </div>
     );
 });
+
+Tasks.displayName = "Tasks";

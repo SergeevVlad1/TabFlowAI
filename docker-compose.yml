@@ -1,0 +1,46 @@
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python config/manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+    environment:
+      - DEBUG=1
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules               # защищаем node_modules от перезаписи
+    environment:
+      - VITE_API_URL=http://127.0.0.1:8000/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+    
+# Если позже перейдёшь на PostgreSQL — просто раскомментируй
+#  db:
+#    image: postgres:16-alpine
+#    environment:
+#      POSTGRES_DB: tabflow
+#      POSTGRES_USER: tabflow
+#      POSTGRES_PASSWORD: verysecret
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    ports:
+#      - "5433:5432"
+
+# volumes:
+#   postgres_data:
