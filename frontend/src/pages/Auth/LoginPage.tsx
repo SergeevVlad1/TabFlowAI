@@ -1,6 +1,6 @@
 import React, { useState, useCallback, memo } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { handleRequest, MethodEnum } from "../../shared/api";
+import { handleRequest, MethodEnum, type BaseResponse } from "../../shared/api";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.scss";
 import { Input } from "../../shared/ui/input/input";
@@ -9,6 +9,27 @@ import { PathEnum } from "../../app/routers/routers.types";
 import { Logo } from "../../shared/ui/Logo/Logo";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+interface LoginResponse extends BaseResponse {
+	user_token?: string;
+	data?: {
+		token?: string;
+		user?: {
+			id: number;
+			email: string;
+			name: string;
+		};
+	};
+}
+
+interface LoginCredentials {
+	email: string;
+	password: string;
+}
+
+interface GoogleAuthPayload {
+	id_token: string;
+}
 
 export const LoginPage = memo(() => {
 	const [email, setEmail] = useState("");
@@ -19,12 +40,11 @@ export const LoginPage = memo(() => {
 
 	const loginMutation = useMutation({
 		mutationFn: async () => {
-			const response = await handleRequest<any, any>({
+			return await handleRequest<LoginResponse, LoginCredentials>({
 				url: "/auth/login",
 				method: MethodEnum.POST,
 				data: { email, password },
 			});
-			return response;
 		},
 		onSuccess: async (data) => {
 			if (data.ok) {
@@ -36,15 +56,14 @@ export const LoginPage = memo(() => {
 				setError(data.message || "Login failed");
 			}
 		},
-		onError: (err: any) => {
+		onError: (err: Error) => {
 			setError(err.message || "Error logging in");
 		}
 	});
 
-	// Мутация для Google логина
 	const googleAuthMutation = useMutation({
 		mutationFn: async (idToken: string) => {
-			return await handleRequest<any, { id_token: string }>({
+			return await handleRequest<LoginResponse, GoogleAuthPayload>({
 				url: "/auth/google",
 				method: MethodEnum.POST,
 				data: { id_token: idToken },
@@ -62,18 +81,18 @@ export const LoginPage = memo(() => {
 				setError("Google authentication failed on server");
 			}
 		},
-		onError: (err: any) => {
+		onError: (err: Error) => {
 			setError(err.message || "Failed to authenticate with Google");
 		}
 	});
 
-	const handleLogin = useCallback(async (e: React.FormEvent) => {
+	const handleLogin = useCallback((e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
 		loginMutation.mutate();
 	}, [loginMutation]);
 
-	const handleGoogleLogin = useCallback(async (e: React.MouseEvent) => {
+	const handleGoogleLogin = useCallback((e: React.MouseEvent) => {
 		e.preventDefault();
 		setError("");
 
@@ -113,8 +132,9 @@ export const LoginPage = memo(() => {
 					}
 				}
 			);
-		} catch (err: any) {
-			setError(err.message || "Google Auth Error");
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : "Google Auth Error";
+			setError(message);
 		}
 	}, [googleAuthMutation]);
 
@@ -133,6 +153,7 @@ export const LoginPage = memo(() => {
 
 				<form onSubmit={handleLogin} className={styles.form}>
 					<button
+						type="button"
 						onClick={handleGoogleLogin}
 						className={styles.googleBtn}
 						disabled={isLoading}
@@ -182,3 +203,5 @@ export const LoginPage = memo(() => {
 		</div>
 	);
 });
+
+LoginPage.displayName = "LoginPage";

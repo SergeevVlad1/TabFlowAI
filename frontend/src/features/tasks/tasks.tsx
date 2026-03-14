@@ -144,7 +144,7 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
     const { mutate: updateTaskData } = useUpdateTaskMutation();
 
     const handleToggle = React.useCallback(
-        (id: string, completed: boolean, timeSpent?: number) => 
+        (id: string, completed: boolean, timeSpent?: number) =>
             toggleTask({ id, completed, timeSpent }),
         [toggleTask],
     );

@@ -117,7 +117,7 @@ export const Popup = () => {
 							
 								<ErrorMessage
 									message={
-										(error as any)?.message || localError
+										(error instanceof Error ? error.message : null) || localError
 									}
 									onClose={() => {
 										resetMutation();

@@ -43,7 +43,7 @@ export const SettingsPage: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		let timer: any;
+		let timer: ReturnType<typeof setTimeout>;
 		if (isConfirmingLogout) {
 			timer = setTimeout(() => setIsConfirmingLogout(false), 3500);
 		}
@@ -69,7 +69,6 @@ export const SettingsPage: React.FC = () => {
 			</header>
 
 			<div className={styles.content}>
-				{/* User Section */}
 				<section className={styles.section}>
 					<div className={styles.profileCard}>
 						<div className={styles.avatar}>{name?.[0] || email?.[0]}</div>
@@ -85,7 +84,6 @@ export const SettingsPage: React.FC = () => {
 					</div>
 				</section>
 
-				{/* Theme & Display */}
 				<section className={styles.section}>
 					<h2 className={styles.sectionTitle}>Оформление</h2>
 					<div className={styles.card}>
@@ -140,7 +138,6 @@ export const SettingsPage: React.FC = () => {
 					</div>
 				</section>
 
-				{/* AI Preferences */}
 				<section className={styles.section}>
 					<div className={styles.labelWithBadge}>
 						<h2 className={styles.sectionTitle}>
@@ -166,13 +163,13 @@ export const SettingsPage: React.FC = () => {
 										}
 									>
 										<option value="gemini-2.5-flash">
-											Gemini 2.5 Flash (Быстрый)
+											Gemini 2.5 Flash (Fast)
 										</option>
 										<option value="gpt-4o" disabled>
 											GPT-4o (Coming Soon)
 										</option>
 										<option value="claude-3-sonnet" disabled>
-											Claude 3.5 Sonnet (PRO)
+											Claude 3.5 Sonnet (Pro)
 										</option>
 									</select>
 								</div>
@@ -181,7 +178,6 @@ export const SettingsPage: React.FC = () => {
 					</div>
 				</section>
 
-				{/* Focus & Sound */}
 				<section className={styles.section}>
 					<h2 className={styles.sectionTitle}>Фокус и Звук</h2>
 					<div className={styles.card}>

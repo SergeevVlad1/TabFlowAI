@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { storage } from "./storage";
 
 export const baseURL =
@@ -12,17 +12,15 @@ export enum MethodEnum {
 	PATCH = "PATCH",
 }
 
-/**
- * Базовая структура ответа от сервера.
- * Это позволяет избежать any и гарантирует наличие поля ok.
- */
 export interface BaseResponse {
 	ok: boolean;
 	message?: string;
+	user_token?: string;
 	error?: {
+		code?: number;
 		details?: string;
 	};
-	[key: string]: unknown; // Для дополнительных полей, таких как user_token
+	data?: unknown;
 }
 
 export interface RequestParams<D = void> {
@@ -32,36 +30,31 @@ export interface RequestParams<D = void> {
 	headers?: Record<string, string>;
 }
 
-export const handleRequest = async <T = unknown, D = void>({
+export const handleRequest = async <T extends BaseResponse = BaseResponse, D = void>({
 	url,
 	method,
 	data,
 	headers,
 }: RequestParams<D>): Promise<T> => {
-	const getFullHeaders = async () => {
+	const buildHeaders = async (): Promise<Record<string, string>> => {
 		const token = await storage.get("token");
-		const defaultHeaders: Record<string, string> = {
+		const base: Record<string, string> = {
 			"Content-Type": "application/json",
 		};
 		if (token && token !== "undefined" && token !== "null") {
-			defaultHeaders["Authorization"] = `Bearer ${token}`;
+			base["Authorization"] = `Bearer ${token}`;
 		}
-		if (headers) {
-			return { ...defaultHeaders, ...headers };
-		}
-		return defaultHeaders;
+		return headers ? { ...base, ...headers } : base;
 	};
 
 	try {
-		const response = await axios(baseURL + url, {
+		const response = await axios<T>(baseURL + url, {
 			method,
 			data,
-			headers: await getFullHeaders(),
+			headers: await buildHeaders(),
 		});
 
-		// Check for success statuses (200, 201 etc.)
 		if (response.status >= 200 && response.status < 300) {
-			// If the response explicitly returns ok: false, it's a domain error
 			if (response.data.ok === false) {
 				throw new Error(
 					response.data.error?.details ||
@@ -70,7 +63,6 @@ export const handleRequest = async <T = unknown, D = void>({
 				);
 			}
 
-			// Update token if it's in the response (usually on login/register)
 			if (response.data.user_token) {
 				await storage.set("token", response.data.user_token);
 			}
@@ -78,12 +70,12 @@ export const handleRequest = async <T = unknown, D = void>({
 		}
 
 		throw new Error(response.data.message || "Request failed");
-	} catch (error: any) {
-		if (error.response) {
-			// The server responded with a status outside of 2xx
+	} catch (error: unknown) {
+		if (axios.isAxiosError(error)) {
+			const axiosErr = error as AxiosError<BaseResponse>;
 			throw new Error(
-				error.response.data.error?.details ||
-					error.response.data.message ||
+				axiosErr.response?.data?.error?.details ||
+					axiosErr.response?.data?.message ||
 					"Network error",
 			);
 		}

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { handleRequest, MethodEnum } from "../../shared/api";
-import type { BaseResponse } from "../../shared/api";
+import React, { useState, memo, useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { handleRequest, MethodEnum, type BaseResponse } from "../../shared/api";
 import { useNavigate, Link } from "react-router-dom";
 import { PathEnum } from "../../app/routers/routers.types";
 import styles from "./Auth.module.scss";
@@ -8,32 +8,48 @@ import { Input } from "../../shared/ui/input/input";
 import { storage } from "../../shared/api/storage";
 import { Logo } from "../../shared/ui/Logo/Logo";
 
-export const RegisterPage = () => {
+interface RegisterCredentials {
+	name: string;
+	email: string;
+	password: string;
+}
+
+export const RegisterPage = memo(() => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
 
-	const handleRegister = async (e: React.FormEvent) => {
-		e.preventDefault();
-		try {
-			const response = await handleRequest<BaseResponse, any>({
+	const registerMutation = useMutation({
+		mutationFn: async () => {
+			return await handleRequest<BaseResponse, RegisterCredentials>({
 				url: "/auth/register",
 				method: MethodEnum.POST,
 				data: { name, email, password },
 			});
-			if (response && response.ok) {
-				await storage.set('user_email', email)
-				await storage.set('user_fullname', name)
+		},
+		onSuccess: async (data) => {
+			if (data.ok) {
+				await storage.set("user_email", email);
+				await storage.set("user_fullname", name);
 				navigate(PathEnum.TASKS);
 			} else {
 				setError("Registration failed. Please try again.");
 			}
-		} catch (err: any) {
+		},
+		onError: (err: Error) => {
 			setError(err.message || "Error registering");
-		}
-	};
+		},
+	});
+
+	const handleRegister = useCallback((e: React.FormEvent) => {
+		e.preventDefault();
+		setError("");
+		registerMutation.mutate();
+	}, [registerMutation]);
+
+	const isLoading = registerMutation.isPending;
 
 	return (
 		<div className={styles.authPage}>
@@ -55,6 +71,7 @@ export const RegisterPage = () => {
 						onChange={setName}
 						required
 						fullWidth
+						disabled={isLoading}
 					/>
 					<Input
 						label="Email Address"
@@ -64,6 +81,7 @@ export const RegisterPage = () => {
 						onChange={setEmail}
 						required
 						fullWidth
+						disabled={isLoading}
 					/>
 					<Input
 						label="Password"
@@ -73,10 +91,15 @@ export const RegisterPage = () => {
 						onChange={setPassword}
 						required
 						fullWidth
+						disabled={isLoading}
 					/>
 
-					<button type="submit" className={styles.submitBtn}>
-						Create account
+					<button 
+						type="submit" 
+						className={styles.submitBtn}
+						disabled={isLoading}
+					>
+						{isLoading ? "Creating..." : "Create account"}
 					</button>
 				</form>
 
@@ -86,4 +109,6 @@ export const RegisterPage = () => {
 			</div>
 		</div>
 	);
-};
+});
+
+RegisterPage.displayName = "RegisterPage";

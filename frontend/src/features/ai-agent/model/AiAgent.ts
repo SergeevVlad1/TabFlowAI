@@ -44,7 +44,7 @@ class ProductivityAiAgent {
 		const { tasks } = useTaskStore.getState();
 		const { addInsight } = useAiStore.getState();
 		const highPriTasks = tasks.filter(
-			(t: any) => t.priority === "high" && !t.completed,
+			(t) => t.priority === "high" && !t.completed,
 		);
 
 		if (highPriTasks.length > 2) {

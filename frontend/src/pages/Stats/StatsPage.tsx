@@ -16,7 +16,7 @@ export const StatsPage: React.FC = () => {
 
 	const [, _setTick] = React.useState(0);
 	React.useEffect(() => {
-		let interval: any;
+		let interval: ReturnType<typeof setInterval>;
 		if (activeTaskId) {
 			interval = setInterval(() => _setTick(t => t + 1), 1000);
 		}

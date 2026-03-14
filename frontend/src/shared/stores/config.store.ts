@@ -7,8 +7,8 @@ interface ConfigState {
 	toggleTheme: () => void;
 	notificationsEnabled: boolean;
 	setNotificationsEnabled: (enabled: boolean) => void;
-	aiModel: "gpt-4o" | "gpt-3.5-turbo" | "claude-3-sonnet";
-	setAiModel: (model: "gpt-4o" | "gpt-3.5-turbo" | "claude-3-sonnet") => void;
+	aiModel: "gemini-2.5-flash" | "gpt-4o" | "claude-3-sonnet";
+	setAiModel: (model: "gemini-2.5-flash" | "gpt-4o" | "claude-3-sonnet") => void;
 }
 
 export const useConfigStore = create<ConfigState>()(
@@ -31,7 +31,7 @@ export const useConfigStore = create<ConfigState>()(
 			notificationsEnabled: true,
 			setNotificationsEnabled: (notificationsEnabled) =>
 				set({ notificationsEnabled }),
-			aiModel: "gpt-4o",
+			aiModel: "gemini-2.5-flash",
 			setAiModel: (aiModel) => set({ aiModel }),
 		}),
 		{
