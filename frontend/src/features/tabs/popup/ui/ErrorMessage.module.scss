@@ -1,0 +1,60 @@
+.container {
+	background: rgba(239, 68, 68, 0.08);
+	border: 1px solid rgba(239, 68, 68, 0.15);
+	border-radius: var(--radius-md);
+	padding: 8px 10px;
+	margin-bottom: var(--space-md);
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+	animation: slideIn 0.25s cubic-bezier(0, 0, 0.2, 1);
+	position: relative;
+	backdrop-filter: blur(8px);
+}
+
+.icon {
+	color: #ef4444;
+	display: flex;
+	padding-top: 1px;
+}
+
+.content {
+	flex: 1;
+}
+
+.text {
+	color: #ef4444;
+	font-size: 0.8rem;
+	font-weight: 500;
+	line-height: 1.4;
+	display: block;
+}
+
+.closeBtn {
+	background: transparent;
+	border: none;
+	color: rgba(239, 68, 68, 0.5);
+	cursor: pointer;
+	padding: 2px;
+	border-radius: 4px;
+	transition: all 0.2s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&:hover {
+		background: rgba(239, 68, 68, 0.1);
+		color: #ef4444;
+	}
+}
+
+@keyframes slideIn {
+	from { 
+		transform: translateY(-8px); 
+		opacity: 0; 
+	}
+	to { 
+		transform: translateY(0); 
+		opacity: 1; 
+	}
+}

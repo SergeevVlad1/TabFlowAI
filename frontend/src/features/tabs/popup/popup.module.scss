@@ -6,11 +6,11 @@
 	width: 100%;
 	background: var(--primary-color);
 	color: var(--bg-color);
-	padding: 12px;
+	padding: 10px;
 	border-radius: var(--radius-md);
 	font-weight: 600;
-	font-size: 0.9rem;
-	gap: 8px;
+	font-size: 0.85rem;
+	gap: 6px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -99,10 +99,10 @@
 
 	button {
 		flex: 1;
-		padding: 10px;
+		padding: 8px;
 		border-radius: var(--radius-md);
 		font-weight: 600;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 		cursor: pointer;
 		transition: opacity 0.2s;
 	}

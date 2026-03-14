@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import {
 	useTabStore,
 	type CategoryType,
@@ -8,6 +8,8 @@ import { Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { groupTabs } from "./utils/getAllTabs";
 import { useOrganizeTabsMutation } from "../hooks/hook";
+import { ErrorMessage } from "./ui/ErrorMessage";
+import { useState } from "react";
 
 export const Popup = () => {
 	const {
@@ -21,10 +23,25 @@ export const Popup = () => {
 		reset,
 	} = useTabStore();
 
-	const { mutateAsync: organizeTabs } = useOrganizeTabsMutation();
+	const [localError, setLocalError] = useState<string | null>(null);
+
+	const {
+		mutateAsync: organizeTabs,
+		error,
+		isError,
+		reset: resetMutation,
+	} = useOrganizeTabsMutation();
 
 	useEffect(() => {
-		fetchTabs();
+		const init = async () => {
+			try {
+				setLocalError(null);
+				await fetchTabs();
+			} catch (err) {
+				setLocalError("Не удалось загрузить список вкладок");
+			}
+		};
+		init();
 	}, [fetchTabs]);
 
 	const categories: CategoryType[] = [
@@ -43,7 +60,7 @@ export const Popup = () => {
 		other: "Разное",
 	};
 
-	const handleGroupTabs = async () => {
+	const handleGroupTabs = useCallback(async () => {
 		try {
 			const classifiedTabs = await organizeTabs({
 				tabs,
@@ -53,9 +70,10 @@ export const Popup = () => {
 				await groupTabs(classifiedTabs);
 			}
 		} catch (error) {
+			// Error is already handled by useMutation.onError
 			console.error("Grouping failed:", error);
 		}
-	};
+	}, [organizeTabs, tabs, selectedCategories]);
 
 	return (
 		<div className={styles.popup}>
@@ -84,16 +102,36 @@ export const Popup = () => {
 													cat,
 												) && styles.active,
 											)}
-											onClick={() => toggleCategory(cat)}
+											onClick={() => {
+												toggleCategory(cat);
+												if (isError) resetMutation();
+												if (localError)
+													setLocalError(null);
+											}}
 										>
 											{categoryLabels[cat]}
 										</div>
 									))}
 								</div>
+
+							
+								<ErrorMessage
+									message={
+										(error as any)?.message || localError
+									}
+									onClose={() => {
+										resetMutation();
+										setLocalError(null);
+									}}
+								/>
+
 								<div className={styles.modalActions}>
 									<button
 										className={styles.cancelBtn}
-										onClick={reset}
+										onClick={() => {
+											reset();
+											resetMutation();
+										}}
 									>
 										Cancel
 									</button>
