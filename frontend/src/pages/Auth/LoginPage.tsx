@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, memo } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { handleRequest, MethodEnum } from "../../shared/api";
-import type { BaseResponse } from "../../shared/api";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Auth.module.scss";
 import { Input } from "../../shared/ui/input/input";
@@ -8,35 +8,117 @@ import { storage } from "../../shared/api/storage";
 import { PathEnum } from "../../app/routers/routers.types";
 import { Logo } from "../../shared/ui/Logo/Logo";
 
-export const LoginPage = () => {
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+export const LoginPage = memo(() => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
+	
 	const navigate = useNavigate();
 
-	const handleLogin = async (e: React.FormEvent) => {
-		e.preventDefault();
-
-		try {
-			const response = await handleRequest<BaseResponse, any>({
+	const loginMutation = useMutation({
+		mutationFn: async () => {
+			const response = await handleRequest<any, any>({
 				url: "/auth/login",
 				method: MethodEnum.POST,
 				data: { email, password },
 			});
-			if (response && response.ok) {
-				await storage.set('user_email', email)
+			return response;
+		},
+		onSuccess: async (data) => {
+			if (data.ok) {
+				const token = data.user_token || data.data?.token;
+				if (token) await storage.set("token", token);
+				await storage.set("user_email", email);
 				navigate(PathEnum.TASKS);
 			} else {
-				setError("Login failed. Please check your credentials.");
+				setError(data.message || "Login failed");
 			}
-		} catch (err: any) {
+		},
+		onError: (err: any) => {
 			setError(err.message || "Error logging in");
 		}
-	};
+	});
 
-	const handleGoogleLogin = async () => {
-		console.log("Not fully implemented: Google OAuth flow");
-	};
+	// Мутация для Google логина
+	const googleAuthMutation = useMutation({
+		mutationFn: async (idToken: string) => {
+			return await handleRequest<any, { id_token: string }>({
+				url: "/auth/google",
+				method: MethodEnum.POST,
+				data: { id_token: idToken },
+			});
+		},
+		onSuccess: async (data) => {
+			if (data.ok) {
+				const token = data.user_token || data.data?.token;
+				if (token) await storage.set("token", token);
+				if (data.data?.user?.email) {
+					await storage.set("user_email", data.data.user.email);
+				}
+				navigate(PathEnum.TASKS);
+			} else {
+				setError("Google authentication failed on server");
+			}
+		},
+		onError: (err: any) => {
+			setError(err.message || "Failed to authenticate with Google");
+		}
+	});
+
+	const handleLogin = useCallback(async (e: React.FormEvent) => {
+		e.preventDefault();
+		setError("");
+		loginMutation.mutate();
+	}, [loginMutation]);
+
+	const handleGoogleLogin = useCallback(async (e: React.MouseEvent) => {
+		e.preventDefault();
+		setError("");
+
+		if (typeof chrome === "undefined" || !chrome.identity) {
+			setError("Chrome Identity API is not available. Please ensure you are running this in a Chrome Extension context and have reloaded the extension.");
+			return;
+		}
+
+		try {
+			const clientId = GOOGLE_CLIENT_ID;
+			const redirectUrl = chrome.identity.getRedirectURL();
+			const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+			
+			authUrl.searchParams.append("client_id", clientId);
+			authUrl.searchParams.append("response_type", "id_token");
+			authUrl.searchParams.append("redirect_uri", redirectUrl);
+			authUrl.searchParams.append("scope", "openid email profile");
+			authUrl.searchParams.append("prompt", "select_account");
+			authUrl.searchParams.append("nonce", Math.random().toString(36).substring(2));
+
+			chrome.identity.launchWebAuthFlow(
+				{ url: authUrl.toString(), interactive: true },
+				(responseUrl) => {
+					if (chrome.runtime.lastError || !responseUrl) {
+						setError(chrome.runtime.lastError?.message || "Auth flow cancelled");
+						return;
+					}
+
+					const url = new URL(responseUrl);
+					const params = new URLSearchParams(url.hash.substring(1));
+					const idToken = params.get("id_token");
+
+					if (idToken) {
+						googleAuthMutation.mutate(idToken);
+					} else {
+						setError("Failed to obtain ID Token from Google");
+					}
+				}
+			);
+		} catch (err: any) {
+			setError(err.message || "Google Auth Error");
+		}
+	}, [googleAuthMutation]);
+
+	const isLoading = loginMutation.isPending || googleAuthMutation.isPending;
 
 	return (
 		<div className={styles.authPage}>
@@ -53,6 +135,7 @@ export const LoginPage = () => {
 					<button
 						onClick={handleGoogleLogin}
 						className={styles.googleBtn}
+						disabled={isLoading}
 					>
 						<img
 							src="https://www.google.com/favicon.ico"
@@ -69,6 +152,7 @@ export const LoginPage = () => {
 						onChange={setEmail}
 						required
 						fullWidth
+						disabled={isLoading}
 					/>
 					<Input
 						label="Password"
@@ -78,10 +162,15 @@ export const LoginPage = () => {
 						onChange={setPassword}
 						required
 						fullWidth
+						disabled={isLoading}
 					/>
 
-					<button type="submit" className={styles.submitBtn}>
-						Sign in
+					<button 
+						type="submit" 
+						className={styles.submitBtn}
+						disabled={isLoading}
+					>
+						{isLoading ? "Signing in..." : "Sign in"}
 					</button>
 				</form>
 
@@ -92,4 +181,4 @@ export const LoginPage = () => {
 			</div>
 		</div>
 	);
-};
+});

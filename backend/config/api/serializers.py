@@ -40,7 +40,17 @@ class GoogleAuthSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid Google token')
         email = idinfo.get('email')
         name = idinfo.get('name', '')
-        user, created = User.objects.get_or_create(email=email, defaults={'name': name})
+        # Мы должны указать username, так как он уникален в AbstractUser
+        # И добавить пустые значения для обязательных полей нашей модели
+        user, created = User.objects.get_or_create(
+            email=email, 
+            defaults={
+                'name': name,
+                'username': email,
+                'second_name': '',
+                'phone': ''
+            }
+        )
         attrs['user'] = user
         return attrs
 

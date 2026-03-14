@@ -72,7 +72,7 @@ export const SettingsPage: React.FC = () => {
 				{/* User Section */}
 				<section className={styles.section}>
 					<div className={styles.profileCard}>
-						<div className={styles.avatar}>{name?.[0]}</div>
+						<div className={styles.avatar}>{name?.[0] || email?.[0]}</div>
 						<div className={styles.userInfo}>
 							<h3 className={styles.userName}>
 								{name}
@@ -81,7 +81,7 @@ export const SettingsPage: React.FC = () => {
 								{email}
 							</p>
 						</div>
-						<span className={styles.proBadge}>PRO</span>
+						<span className={styles.proBadge}>BETA</span>
 					</div>
 				</section>
 
@@ -142,9 +142,12 @@ export const SettingsPage: React.FC = () => {
 
 				{/* AI Preferences */}
 				<section className={styles.section}>
-					<h2 className={styles.sectionTitle}>
-						Искусственный интеллект
-					</h2>
+					<div className={styles.labelWithBadge}>
+						<h2 className={styles.sectionTitle}>
+							Искусственный интеллект
+						</h2>
+						<span className={styles.betaBadge}>BETA</span>
+					</div>
 					<div className={styles.card}>
 						<div className={styles.settingItem}>
 							<div className={styles.labelGroup}>
@@ -162,11 +165,11 @@ export const SettingsPage: React.FC = () => {
 											setAiModel(e.target.value as any)
 										}
 									>
-										<option value="gpt-4o" disabled>
-											GPT-4o (Coming Soon)
-										</option>
 										<option value="gemini-2.5-flash">
 											Gemini 2.5 Flash (Быстрый)
+										</option>
+										<option value="gpt-4o" disabled>
+											GPT-4o (Coming Soon)
 										</option>
 										<option value="claude-3-sonnet" disabled>
 											Claude 3.5 Sonnet (PRO)

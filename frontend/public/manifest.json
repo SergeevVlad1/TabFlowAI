@@ -15,8 +15,17 @@
 		"storage",
 		"alarms",
 		"activeTab",
-		"sidePanel"
+		"sidePanel",
+		"identity"
 	],
+	"oauth2": {
+    "client_id": "725446145183-k4dklhtoh4d64biv8bjcrlr752apk037.apps.googleusercontent.com",
+    "scopes": [
+      "openid",
+      "email",
+      "profile"
+    ]
+  },
 	"action": {
 		"default_title": "Open Dashboard"
 	},

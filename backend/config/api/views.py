@@ -145,14 +145,15 @@ def google_auth_view(request):
     serializer = GoogleAuthSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.validated_data['user']
-        refresh = RefreshToken.for_user(user)
+        # Используем DRF Token вместо JWT для консистентности со всем проектом
+        token, _ = Token.objects.get_or_create(user=user)
         return Response({
             "ok": True,
             "message": "success",
+            "user_token": token.key, # Поле user_token автоматически сохранится во фронтенде
             "data": {
                 "user": UserSerializer(user).data,
-                "token": str(refresh.access_token),
-                "refresh": str(refresh)
+                "token": token.key,
             }
         })
     return Response({"ok": False, "message": "error", "error": serializer.errors}, status=400)

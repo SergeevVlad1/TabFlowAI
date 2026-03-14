@@ -8,7 +8,6 @@ import {
 	deleteTask,
 	getTask,
 	getTasks,
-	toggleTask,
 	updateTask,
 } from "./tasks.api";
 import type { Task } from "./store/taskStore";
@@ -68,19 +67,16 @@ export const useToggleTaskMutation = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["tasks"] });
 		},
-		mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
-			toggleTask(id, completed),
-		onMutate: async ({ id: updatedId, completed }) => {
-			// 1. Отменяем запросы
+		mutationFn: ({ id, completed, timeSpent }: { id: string; completed: boolean; timeSpent?: number }) =>
+			updateTask(id, { completed, timeSpent }),
+		onMutate: async ({ id: updatedId, ...updates }) => {
 			await queryClient.cancelQueries({ queryKey: ["tasks"] });
-
-			// 2. Берем старые данные
 			const previousTasks = queryClient.getQueryData(["tasks"]);
-			// 3. Обновляем кэш вручную (Оптимистично)
+			
 			queryClient.setQueryData(["tasks"], (old: any) => {
 				if (!old) return old;
 				return old.map((task: any) =>
-					task.id === updatedId ? { ...task, completed } : task,
+					task.id === updatedId ? { ...task, ...updates } : task,
 				);
 			});
 			return { previousTasks };
