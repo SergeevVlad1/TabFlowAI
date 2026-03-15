@@ -23,7 +23,17 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-isw^8w7f%!(g%pfq&8=
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'tabflowai.onrender.com',
+    '.onrender.com',  # Разрешаем все поддомены render
+    'localhost',
+    '127.0.0.1',
+]
+
+# Дополнительно разрешаем хосты из переменной окружения, если они там есть
+env_hosts = os.getenv('ALLOWED_HOSTS')
+if env_hosts:
+    ALLOWED_HOSTS.extend([h.strip() for h in env_hosts.split(',') if h.strip()])
 
 # Application definition
 

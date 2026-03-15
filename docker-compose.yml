@@ -25,7 +25,7 @@ services:
       - ./frontend:/app
       - /app/node_modules               # защищаем node_modules от перезаписи
     environment:
-      - VITE_API_URL=http://127.0.0.1:8000/api
+      - VITE_API_URL=https://tabflowai.onrender.com/api
     depends_on:
       - backend
     restart: unless-stopped
