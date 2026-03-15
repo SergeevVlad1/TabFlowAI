@@ -9,7 +9,7 @@ export const SendTabsToAI = async (
 	tabs: SimplifiedTab[],
 	categories: string[],
 ): Promise<SimplifiedTab[]> => {
-	const response = await handleRequest<TabsGroupsResponse, any>({
+	const response = await handleRequest<any, any>({
 		url: "/tabs/groups",
 		method: MethodEnum.POST,
 		data: {
@@ -17,6 +17,12 @@ export const SendTabsToAI = async (
 			categories,
 		},
 	});
-	return response.data;
+
+	// Гибкая проверка формата ответа: массив или объект с полем data
+	if (Array.isArray(response)) return response;
+	if (response && Array.isArray(response.data)) return response.data;
+	
+	return [];
 };
+
 

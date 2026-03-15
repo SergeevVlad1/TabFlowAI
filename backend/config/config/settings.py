@@ -137,3 +137,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+# GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
