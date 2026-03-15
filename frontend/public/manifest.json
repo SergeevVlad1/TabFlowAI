@@ -1,24 +1,36 @@
 {
-	"manifest_version": 3,
-	"name": "TabFlowAI",
-	"version": "1.0.0",
-	"description": "Organize tabs, manage tasks, and boost productivity with smart tab grouping and workflow tools.",
-	"key": "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDCqa5ooiGZ5YKLr71EfNdA3x4ewxzQlnRckCPhdCvS3tO22XV1UJQaNgeWPUUsVdVHNPsJvGqTN4vaXQua2VW6qHTt2kC3lpSUQTnabsxqUK9CHFPIaATSbNb2UaYq9ToDT230QnMUA4AEIM0ocAHMQ2QnF1RRuBp0QySuxvS2lu7QJ+VSgZW7fbClncCtqbVx20uYYz15yJbOlnNbSYbxWh6S8QDAcBOwFp3yAl4jmO6D2mJJDYLnmAnf5fslKpPct8dpfztBJ/sgZKiPg/1IoUfFEZEvM5on29QZ0iQTRdwq3JQ16o3bOGa1tU7NSPxPpbz4iKtjXigZ8nZRhpNnAgMBAAECggEAOKkzPvmSVj1b1lT8/mZoMVXAaqvYQ07H5/l8uC8cYnDBp0N80Pz3XvnDE5QaAmGphuSA/cB+NQPCDXlv207PiVlnT6RrmgSWkuC5ej8t+PQrT073hCni3W0Y1PHHMFHY5QXFt4dv/69VH958WPzhSReEm2xK+s5fxN+WWdlHea3LOBgNiOaL03I9ploZ9uc8JxurwIfITz012Q5Q8oUJr5e2IIHB1atwjuqqtkY74wldqElkbOFyYWfsaPqPEKjsFfbhr2o8ZibETMeSOHWyBz8ChTkrIq0pPmM/LZrLfpSvIbjkrwJniSYyctwAcyferjaBtRxngLqbbHpjqX+jIQKBgQDgcz/Hxcd2vYrQiCwuAgarwfanc4wUhfb5Kf9vNxBK+xfcCXE9hjkxtagdhoJXHzRR27+YJYtOv/jH8NGsST060a47zgwjLCJozdiUZxfo968rb3sV99y0djSW2nov3FK3mjTSPJr/QPoG4/WLCfmMZDGgTEyU98PuJ1PujdXPlQKBgQDeBouaV8wl1hcl/5nUJYcwydKsdiwETVYw21dg46xtxL9B8ZYP4+E7sxnvCrPMtB/kZ5gRt6PsuNlsHUIK9t/q9dj4OYnNn2uH3GYxrnZaP6WXy5SmwLPfQic+vTJc+sWnIuEb/x7Vycfoa7li1AAgjX9iyLXhGdHIev7wEPIICwKBgQDdlyq60jpQsmSf6DCl434uiDo5q8v6XyArchkq9ZPyUt+FbxULhr5ko1GshKWd2cLPpkILtdVJFCJLUyfODiiTL3vys0QsXWBDVCakrPtgF1gra857K9ALoj/dRykmo0BO38GSZh8oLkAqGVjLwjdLMYgFGA7ra4lWUCF+/Sy/2QKBgByHUMbbQzMVaFIMntKAo/dj53sbkBpZaZrLhFXBy3UrU7wAc9zE1jsaj1mE0YebGYH6wbJ9G0Yelmlq9QJ9qFYDkwaKNifCtUl2y3bUyQZdqURw9z/aAQLN+Eb6fo8t9dm9BJnZVTf5PoOh2+dUAFQuelDSI3SyIZ+WFk34j3DzAoGAGNHRPsEE6gHsN5Is/1oinzUTK3e8Bofsk2oVoBCJSk1eZpxn0nFUbJFBlsIuBfplddzIk7RmE9448oHLHHcfl0SNPUXV+yc1fQ/Qmdg6uXC2mycksUZtolUkptCkqmtyXLXD/YzZDXbZ/rn7qSUjMZYHf+CORs1RUXx3RON6fzQ=",
-	"icons": {
-		"16": "icons/TabFlowAI.png",
-		"48": "icons/TabFlowAI.png",
-		"128": "icons/TabFlowAI.png"
-	},
-	"permissions": [
-		"tabs",
-		"tabGroups",
-		"storage",
-		"alarms",
-		"activeTab",
-		"sidePanel",
-		"identity"
-	],
-	"oauth2": {
+  "manifest_version": 3,
+  "name": "TabFlowAI: Smart Tab & Task Organizer",
+  "version": "1.0.0",
+  "description": "Streamline your workflow with AI-powered tab grouping and an integrated task manager in one unified workspace.",
+  "key": "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDCqa5ooiGZ5YKLr71EfNdA3x4ewxzQlnRckCPhdCvS3tO22XV1UJQaNgeWPUUsVdVHNPsJvGqTN4vaXQua2VW6qHTt2kC3lpSUQTnabsxqUK9CHFPIaATSbNb2UaYq9ToDT230QnMUA4AEIM0ocAHMQ2QnF1RRuBp0QySuxvS2lu7QJ+VSgZW7fbClncCtqbVx20uYYz15yJbOlnNbSYbxWh6S8QDAcBOwFp3yAl4jmO6D2mJJDYLnmAnf5fslKpPct8dpfztBJ/sgZKiPg/1IoUfFEZEvM5on29QZ0iQTRdwq3JQ16o3bOGa1tU7NSPxPpbz4iKtjXigZ8nZRhpNnAgMBAAECggEAOKkzPvmSVj1b1lT8/mZoMVXAaqvYQ07H5/l8uC8cYnDBp0N80Pz3XvnDE5QaAmGphuSA/cB+NQPCDXlv207PiVlnT6RrmgSWkuC5ej8t+PQrT073hCni3W0Y1PHHMFHY5QXFt4dv/69VH958WPzhSReEm2xK+s5fxN+WWdlHea3LOBgNiOaL03I9ploZ9uc8JxurwIfITz012Q5Q8oUJr5e2IIHB1atwjuqqtkY74wldqElkbOFyYWfsaPqPEKjsFfbhr2o8ZibETMeSOHWyBz8ChTkrIq0pPmM/LZrLfpSvIbjkrwJniSYyctwAcyferjaBtRxngLqbbHpjqX+jIQKBgQDgcz/Hxcd2vYrQiCwuAgarwfanc4wUhfb5Kf9vNxBK+xfcCXE9hjkxtagdhoJXHzRR27+YJYtOv/jH8NGsST060a47zgwjLCJozdiUZxfo968rb3sV99y0djSW2nov3FK3mjTSPJr/QPoG4/WLCfmMZDGgTEyU98PuJ1PujdXPlQKBgQDeBouaV8wl1hcl/5nUJYcwydKsdiwETVYw21dg46xtxL9B8ZYP4+E7sxnvCrPMtB/kZ5gRt6PsuNlsHUIK9t/q9dj4OYnNn2uH3GYxrnZaP6WXy5SmwLPfQic+vTJc+sWnIuEb/x7Vycfoa7li1AAgjX9iyLXhGdHIev7wEPIICwKBgQDdlyq60jpQsmSf6DCl434uiDo5q8v6XyArchkq9ZPyUt+FbxULhr5ko1GshKWd2cLPpkILtdVJFCJLUyfODiiTL3vys0QsXWBDVCakrPtgF1gra857K9ALoj/dRykmo0BO38GSZh8oLkAqGVjLwjdLMYgFGA7ra4lWUCF+/Sy/2QKBgByHUMbbQzMVaFIMntKAo/dj53sbkBpZaZrLhFXBy3UrU7wAc9zE1jsaj1mE0YebGYH6wbJ9G0Yelmlq9QJ9qFYDkwaKNifCtUl2y3bUyQZdqURw9z/aAQLN+Eb6fo8t9dm9BJnZVTf5PoOh2+dUAFQuelDSI3SyIZ+WFk34j3DzAoGAGNHRPsEE6gHsN5Is/1oinzUTK3e8Bofsk2oVoBCJSk1eZpxn0nFUbJFBlsIuBfplddzIk7RmE9448oHLHHcfl0SNPUXV+yc1fQ/Qmdg6uXC2mycksUZtolUkptCkqmtyXLXD/YzZDXbZ/rn7qSUjMZYHf+CORs1RUXx3RON6fzQ=",
+  "icons": {
+    "16": "icons/TabFlow_16x16.png",
+    "48": "icons/TabFlow_48x48.png",
+    "128": "icons/TabFlow_128x128.png"
+  },
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "alarms",
+    "sidePanel",
+    "identity"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "Open TabFlowAI Dashboard"
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "oauth2": {
     "client_id": "725446145183-k4dklhtoh4d64biv8bjcrlr752apk037.apps.googleusercontent.com",
     "scopes": [
       "openid",
@@ -26,15 +38,8 @@
       "profile"
     ]
   },
-	"action": {
-		"default_title": "Open Dashboard"
-	},
-	"side_panel": {
-		"default_path": "index.html"
-	},
-	"background": {
-		"service_worker": "background.js",
-		"type": "module"
-	},
-	"host_permissions": ["<all_urls>"]
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
 }
+
