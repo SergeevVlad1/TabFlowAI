@@ -84,10 +84,19 @@ def classify_tabs_view(request):
         raw_text = response.text
         json_string = extract_json(raw_text)
         parsed = json.loads(json_string)
-        return Response(parsed, status=status.HTTP_200_OK)
+        
+        # Обертка для фронтенда: если пришел массив, превращаем в объект с 'ok' и 'data'
+        final_data = parsed
+        if isinstance(parsed, list):
+            final_data = {
+                "ok": True,
+                "data": parsed
+            }
+        
+        return Response(final_data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(
-            {"error": str(e)},
+            {"ok": False, "error": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
 @api_view(['POST'])

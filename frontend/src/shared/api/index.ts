@@ -13,7 +13,7 @@ export enum MethodEnum {
 }
 
 export interface BaseResponse {
-	ok: boolean;
+	ok?: boolean;
 	message?: string;
 	user_token?: string;
 	error?: {
