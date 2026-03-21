@@ -137,24 +137,74 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: var(--space-md) 0;
-	gap: 16px;
+	padding: var(--space-xl) 0;
+	gap: var(--space-md);
+	text-align: center;
 
 	p {
 		margin: 0;
-		font-size: 0.9rem;
-		font-weight: 500;
-		color: var(--text-secondary);
+		font-size: 0.95rem;
+		font-weight: 600;
+		background: linear-gradient(90deg, var(--text-primary), var(--primary-color), var(--text-primary));
+		background-size: 200% auto;
+		color: transparent;
+		-webkit-background-clip: text;
+		background-clip: text;
+		animation: shimmerText 2s linear infinite;
+		opacity: 0.9;
 	}
 }
 
-.loadingSpinner {
-	width: 32px;
-	height: 32px;
-	border: 3px solid var(--border-color);
-	border-top-color: var(--primary-color);
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
+.aiLoader {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: var(--space-md);
+
+	.loaderRing {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		border-top-color: var(--primary-color);
+		border-right-color: var(--primary-color);
+		opacity: 0.3;
+		animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+	}
+
+	.loaderRingInner {
+		position: absolute;
+		width: 70%;
+		height: 70%;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		border-bottom-color: var(--primary-color);
+		border-left-color: var(--primary-color);
+		opacity: 0.2;
+		animation: spin 1.5s reverse cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+	}
+
+	.loaderIcon {
+		color: var(--primary-color);
+		filter: drop-shadow(0 0 12px rgba(var(--primary-rgb), 0.4));
+		animation: pulse 2s ease-in-out infinite;
+		z-index: 2;
+	}
+
+	.loaderGlow {
+		position: absolute;
+		width: 50px;
+		height: 50px;
+		background: var(--primary-color);
+		filter: blur(25px);
+		border-radius: 50%;
+		opacity: 0.1;
+		animation: pulseGlow 2s ease-in-out infinite;
+	}
 }
 
 @keyframes fadeIn {
@@ -169,4 +219,18 @@
 
 @keyframes spin {
 	to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+	0%, 100% { transform: scale(1); opacity: 0.8; }
+	50% { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes pulseGlow {
+	0%, 100% { transform: scale(1); opacity: 0.15; }
+	50% { transform: scale(1.4); opacity: 0.25; }
+}
+
+@keyframes shimmerText {
+	to { background-position: 200% center; }
 }

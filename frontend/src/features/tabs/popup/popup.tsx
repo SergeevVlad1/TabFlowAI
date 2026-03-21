@@ -83,13 +83,23 @@ export const Popup = () => {
 				disabled={loading || tabs.length === 0}
 			>
 				<Sparkles size={18} fill="currentColor" />
-				{loading ? "Loading..." : "Organize Tabs"}
+				Organize Tabs
 			</button>
 
-			{modalState !== "closed" && (
+			{(modalState !== "closed" || loading) && (
 				<div className={styles.modalOverlay}>
 					<div className={styles.modalContent}>
-						{modalState === "selecting_param" ? (
+						{loading ? (
+							<div className={styles.sendingState}>
+								<div className={styles.aiLoader}>
+									<div className={styles.loaderGlow}></div>
+									<div className={styles.loaderRing}></div>
+									<div className={styles.loaderRingInner}></div>
+									<Sparkles className={styles.loaderIcon} size={32} />
+								</div>
+								<p>Preparing your workspace...</p>
+							</div>
+						) : modalState === "selecting_param" ? (
 							<>
 								<h4>Select Categories</h4>
 								<div className={styles.categoryGrid}>
@@ -148,7 +158,12 @@ export const Popup = () => {
 							</>
 						) : (
 							<div className={styles.sendingState}>
-								<div className={styles.loadingSpinner}></div>
+								<div className={styles.aiLoader}>
+									<div className={styles.loaderGlow}></div>
+									<div className={styles.loaderRing}></div>
+									<div className={styles.loaderRingInner}></div>
+									<Sparkles className={styles.loaderIcon} size={32} />
+								</div>
 								<p>AI is analyzing your tabs...</p>
 							</div>
 						)}

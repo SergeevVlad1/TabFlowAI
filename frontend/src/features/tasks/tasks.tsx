@@ -160,7 +160,14 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
         [updateTaskData],
     );
 
-    if (isLoading) return <div className={styles.loading}>Loading tasks...</div>;
+    if (isLoading) {
+        return (
+            <div className={styles.loaderWrapper}>
+                <div className={styles.spinner}></div>
+                <span>Loading tasks...</span>
+            </div>
+        );
+    }
     if (error) return null;
 
     return (
