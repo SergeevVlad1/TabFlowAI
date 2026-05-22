@@ -82,7 +82,7 @@ const TasksSummary = memo(({ tasks }: { tasks: Task[] }) => {
 
   const activeTaskId = useTaskStore((state) => state.activeTaskId);
 
-  // We need a local tick to force re-render for live time updates
+
   const [, _setTick] = useState(0);
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;

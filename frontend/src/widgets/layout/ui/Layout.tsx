@@ -1,16 +1,12 @@
 import React, { useEffect } from "react";
 import styles from "./Layout.module.scss";
 import clsx from "clsx";
-import {
-	CheckSquare,
-	BarChart3,
-	Settings,
-} from "lucide-react";
+import { CheckSquare, BarChart3, Settings } from "lucide-react";
 import { useConfigStore } from "../../../shared/stores/config.store";
 import { AiChat } from "../../ai-chat";
 import { useNavigate } from "react-router-dom";
 import { PathEnum } from "../../../app/routers/routers.types";
-import { Logo } from "../../../shared/ui/Logo/Logo";
+import { Logo } from "../../../shared/ui/logo/Logo";
 
 interface LayoutProps {
 	children: React.ReactNode;

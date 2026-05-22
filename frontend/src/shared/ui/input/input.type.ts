@@ -8,5 +8,5 @@ export interface InputProps extends Omit<
 	error?: string;
 	fullWidth?: boolean;
 	onChange?: (value: string) => void;
-	className?: string; // standard className support
+	className?: string;
 }

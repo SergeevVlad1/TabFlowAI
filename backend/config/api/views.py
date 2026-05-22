@@ -111,13 +111,24 @@ def signup(request):
             "user_token": token.key,
             "user": serializer.data
         }, status=201)
+    errors = serializer.errors
+    first_detail = None
+    if isinstance(errors, dict):
+        for k, v in errors.items():
+            if isinstance(v, (list, tuple)) and v:
+                first_detail = f"{k}: {v[0]}"
+                break
+            first_detail = f"{k}: {v}"
+            break
+    else:
+        first_detail = str(errors)
     return Response({
         "ok": False,
-        "message": "error",
+        "message": "Validation error",
         "error": {
             "code": 422,
-            "details": "Validation error",
-            "errors": serializer.errors
+            "details": first_detail or "",
+            "errors": errors
         }
     }, status=422)
 @api_view(['POST'])
@@ -140,12 +151,26 @@ def login(request):
                 'is_staff': user.is_staff,
             }
         })
+    errors = serializer.errors
+    first_detail = None
+    if serializer.is_valid() and not serializer.validated_data:
+        first_detail = "email or password is incorrect"
+    elif isinstance(errors, dict):
+        for k, v in errors.items():
+            if isinstance(v, (list, tuple)) and v:
+                first_detail = f"{k}: {v[0]}"
+                break
+            first_detail = f"{k}: {v}"
+            break
+    else:
+        first_detail = str(errors)
     return Response({
         "ok": False,
-        "message": "error",
+        "message": "Validation error",
         "error": {
             "code": 401,
-            "details": "Authentication failed"
+            "details": first_detail or "",
+            "errors": errors
         }
     }, status=401)
 @api_view(['POST'])

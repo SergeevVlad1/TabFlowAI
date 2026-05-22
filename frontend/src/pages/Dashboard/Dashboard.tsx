@@ -3,7 +3,7 @@ import styles from "./Dashboard.module.scss";
 import { useAiStore } from "../../features/ai/store/aiStore";
 import { useTaskStore } from "../../features/tasks/store/taskStore";
 import { useTrackingStore } from "../../features/tracking/store/trackingStore";
-import { aiAgent } from "../../features/ai/services/AiAgent";
+import { aiAgent } from "../../features/ai-agent";
 import { Sparkles, Play, Flame, Zap, Target } from "lucide-react";
 import clsx from "clsx";
 import { Popup } from "../../features/tabs/popup/popup";

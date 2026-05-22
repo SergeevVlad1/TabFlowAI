@@ -19,8 +19,19 @@ export interface BaseResponse {
 	error?: {
 		code?: number;
 		details?: string;
+		field_errors?: Record<string, string[]>;
 	};
 	data?: unknown;
+}
+
+export class ApiError extends Error {
+	fieldErrors: Record<string, string[]>;
+
+	constructor(message: string, fieldErrors?: Record<string, string[]>) {
+		super(message);
+		this.name = "ApiError";
+		this.fieldErrors = fieldErrors || {};
+	}
 }
 
 export interface RequestParams<D = void> {
@@ -56,10 +67,11 @@ export const handleRequest = async <T extends BaseResponse = BaseResponse, D = v
 
 		if (response.status >= 200 && response.status < 300) {
 			if (response.data.ok === false) {
-				throw new Error(
+				throw new ApiError(
 					response.data.error?.details ||
 						response.data.message ||
 						"Request failed",
+					response.data.error?.field_errors,
 				);
 			}
 
@@ -69,16 +81,22 @@ export const handleRequest = async <T extends BaseResponse = BaseResponse, D = v
 			return response.data;
 		}
 
-		throw new Error(response.data.message || "Request failed");
+		throw new ApiError(response.data.message || "Request failed");
 	} catch (error: unknown) {
+		if (error instanceof ApiError) {
+			throw error;
+		}
 		if (axios.isAxiosError(error)) {
 			const axiosErr = error as AxiosError<BaseResponse>;
-			throw new Error(
-				axiosErr.response?.data?.error?.details ||
-					axiosErr.response?.data?.message ||
+			const respData = axiosErr.response?.data;
+			throw new ApiError(
+				respData?.error?.details ||
+					respData?.message ||
 					"Network error",
+				respData?.error?.field_errors,
 			);
 		}
 		throw error;
 	}
 };
+
