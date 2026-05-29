@@ -6,6 +6,14 @@ export type CategoryType =
 	| "study"
 	| "entertainment"
 	| "finance"
+	| "shopping"
+	| "news"
+	| "social"
+	| "development"
+	| "productivity"
+	| "health"
+	| "travel"
+	| "design"
 	| "other";
 export type ModalState = "closed" | "selecting_param" | "sending";
 
@@ -27,6 +35,14 @@ const DEFAULT_CATEGORIES: CategoryType[] = [
 	"study",
 	"entertainment",
 	"finance",
+	"shopping",
+	"news",
+	"social",
+	"development",
+	"productivity",
+	"health",
+	"travel",
+	"design",
 	"other",
 ];
 
@@ -61,35 +77,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
 	setSelectedCategories: (categories) =>
 		set({ selectedCategories: categories }),
 
-	// processTabsWithAI: async () => {
-	// 	const { tabs, selectedCategories } = get();
-
-	// 	const simplifiedTabs = tabs
-	// 		.filter((tab) => tab.url !== undefined)
-	// 		.map((tab) => ({
-	// 			id: tab.id,
-	// 			title: tab.title ?? "",
-	// 			url: tab.url ?? "",
-	// 		}));
-
-	// 	if (simplifiedTabs.length === 0) {
-	// 		console.warn("No tabs found to process.");
-	// 		return;
-	// 	}
-
-	// 	set({ modalState: "sending" });
-
-	// 	try {
-	// 		const response = await SendTabsToAI(tabs, selectedCategories);
-	// 		set({ modalState: "closed" });
-	// 		return response;
-	// 	} catch (error) {
-	// 		console.error("Failed to process tabs:", error);
-	// 		set({ modalState: "selecting_param" });
-	// 		throw error;
-	// 	}
-	// },
-
 	reset: () =>
 		set({
 			modalState: "closed",
@@ -97,7 +84,6 @@ export const useTabStore = create<TabStore>((set, get) => ({
 		}),
 }));
 
-// Селекторы для оптимизации
 export const useSimplifiedTabs = () => {
 	const tabs = useTabStore((state) => state.tabs);
 	return tabs

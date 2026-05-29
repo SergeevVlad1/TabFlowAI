@@ -4,7 +4,22 @@ import {
 	type CategoryType,
 } from "../../../shared/stores/popup.store";
 import styles from "./popup.module.scss";
-import { Sparkles } from "lucide-react";
+import {
+	Sparkles,
+	Briefcase,
+	BookOpen,
+	Gamepad2,
+	DollarSign,
+	ShoppingCart,
+	Newspaper,
+	Users,
+	Code,
+	Zap,
+	Heart,
+	Plane,
+	Palette,
+	Box
+} from "lucide-react";
 import clsx from "clsx";
 import { groupTabs } from "./utils/getAllTabs";
 import { useOrganizeTabsMutation } from "../hooks/hook";
@@ -38,7 +53,7 @@ export const Popup = () => {
 				setLocalError(null);
 				await fetchTabs();
 			} catch (err) {
-				setLocalError("Не удалось загрузить список вкладок");
+				setLocalError("Failed to load tab list");
 			}
 		};
 		init();
@@ -49,15 +64,47 @@ export const Popup = () => {
 		"study",
 		"entertainment",
 		"finance",
+		"shopping",
+		"news",
+		"social",
+		"development",
+		"productivity",
+		"health",
+		"travel",
+		"design",
 		"other",
 	];
 
 	const categoryLabels: Record<CategoryType, string> = {
-		work: "Работа",
-		study: "Обучение",
-		entertainment: "Развлечения",
-		finance: "Финансы",
-		other: "Разное",
+		work: "Work",
+		study: "Study",
+		entertainment: "Entertainment",
+		finance: "Finance",
+		shopping: "Shopping",
+		news: "News & Media",
+		social: "Social Networks",
+		development: "Development",
+		productivity: "Productivity",
+		health: "Health",
+		travel: "Travel",
+		design: "Design",
+		other: "Other",
+	};
+
+	const categoryIcons: Record<CategoryType, React.ReactNode> = {
+		work: <Briefcase size={16} />,
+		study: <BookOpen size={16} />,
+		entertainment: <Gamepad2 size={16} />,
+		finance: <DollarSign size={16} />,
+		shopping: <ShoppingCart size={16} />,
+		news: <Newspaper size={16} />,
+		social: <Users size={16} />,
+		development: <Code size={16} />,
+		productivity: <Zap size={16} />,
+		health: <Heart size={16} />,
+		travel: <Plane size={16} />,
+		design: <Palette size={16} />,
+		other: <Box size={16} />,
 	};
 
 	const handleGroupTabs = useCallback(async () => {
@@ -70,7 +117,6 @@ export const Popup = () => {
 				await groupTabs(classifiedTabs);
 			}
 		} catch (error) {
-			// Error is already handled by useMutation.onError
 			console.error("Grouping failed:", error);
 		}
 	}, [organizeTabs, tabs, selectedCategories]);
@@ -119,7 +165,10 @@ export const Popup = () => {
 													setLocalError(null);
 											}}
 										>
-											{categoryLabels[cat]}
+											<div className={styles.iconWrapper}>
+												{categoryIcons[cat]}
+											</div>
+											<span>{categoryLabels[cat]}</span>
 										</div>
 									))}
 								</div>
