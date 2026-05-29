@@ -6,15 +6,13 @@ export interface Task {
 	priority: "high" | "medium" | "low";
 	time?: number;
 	completed: boolean;
+	completed_at?: string;
 	createdAt: number;
 	estimatedTime: number; // minutes
 	timeSpent: number;     // milliseconds (last value synced to DB)
 	isRunning: boolean;
 }
 
-// ─── chrome.storage.local helpers ────────────────────────────────────────────
-// We store only 3 numbers: activeTaskId + startTime + baseTime.
-// No server calls, no polling — just a single local write on Play/Pause.
 
 const TIMER_STORAGE_KEY = "tabflow_active_timer";
 
@@ -24,10 +22,6 @@ export interface PersistedTimerState {
 	baseTime:     number; // ms already accumulated before this session
 }
 
-/**
- * Write the active timer session to chrome.storage.local.
- * Pass `null` to clear it (after Pause / task completion).
- */
 export function persistTimerToStorage(state: PersistedTimerState | null): void {
 	if (typeof chrome === "undefined" || !chrome.storage) return;
 	if (state === null) {

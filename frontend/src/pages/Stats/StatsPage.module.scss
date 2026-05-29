@@ -98,3 +98,46 @@
 		transform: translateY(0);
 	}
 }
+
+.chartWrapper {
+	margin-top: var(--space-xl);
+	border-top: 1px solid var(--border-color);
+	padding-top: var(--space-lg);
+	width: 100%;
+}
+
+.customTooltip {
+	background: rgba(20, 20, 20, 0.85);
+	backdrop-filter: blur(8px);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	padding: 0.4rem 0.7rem;
+	display: flex;
+	flex-direction: column;
+	box-shadow: var(--shadow-md);
+
+	.tooltipDay {
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		margin-bottom: 2px;
+	}
+
+	.tooltipVal {
+		font-size: 0.8rem;
+		font-weight: 800;
+		color: var(--text-primary);
+	}
+}
+
+.statsHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: var(--space-md);
+	
+	h2 {
+		margin: 0;
+	}
+}

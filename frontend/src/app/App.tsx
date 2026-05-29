@@ -10,9 +10,9 @@ import { RegisterPage } from "../pages/Auth/RegisterPage";
 import { ProtectedRoute } from "./routers/protectedRoute";
 
 function App() {
-	const [activeTab, setActiveTab] = useState<
-		"tasks" | "stats" | "settings"
-	>("tasks");
+	const [activeTab, setActiveTab] = useState<"tasks" | "stats" | "settings">(
+		"tasks",
+	);
 
 	const [queryClient] = useState(() => new QueryClient());
 

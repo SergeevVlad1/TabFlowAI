@@ -62,9 +62,9 @@ export const SettingsPage: React.FC = () => {
 	return (
 		<div className={styles.settingsPage}>
 			<header className={styles.header}>
-				<h1 className={styles.title}>Настройки</h1>
+				<h1 className={styles.title}>Settings</h1>
 				<p className={styles.subtitle}>
-					Персонализируйте свое пространство TabFlow AI
+					Personalize your TabFlow AI workspace
 				</p>
 			</header>
 
@@ -85,7 +85,7 @@ export const SettingsPage: React.FC = () => {
 				</section>
 
 				<section className={styles.section}>
-					<h2 className={styles.sectionTitle}>Оформление</h2>
+					<h2 className={styles.sectionTitle}>Appearance</h2>
 					<div className={styles.card}>
 						<div
 							className={styles.settingItem}
@@ -101,10 +101,10 @@ export const SettingsPage: React.FC = () => {
 								</div>
 								<div>
 									<span className={styles.label}>
-										Темная тема
+										Dark Mode
 									</span>
 									<p className={styles.description}>
-										Переключить оформление интерфейса
+										Toggle dark theme for the interface
 									</p>
 								</div>
 							</div>
@@ -123,10 +123,10 @@ export const SettingsPage: React.FC = () => {
 								</div>
 								<div>
 									<span className={styles.label}>
-										Уведомления
+										Notifications
 									</span>
 									<p className={styles.description}>
-										Показывать напоминания и алерты
+										Show reminders and alerts
 									</p>
 								</div>
 							</div>
@@ -141,7 +141,7 @@ export const SettingsPage: React.FC = () => {
 				<section className={styles.section}>
 					<div className={styles.labelWithBadge}>
 						<h2 className={styles.sectionTitle}>
-							Искусственный интеллект
+							Artificial Intelligence
 						</h2>
 						<span className={styles.betaBadge}>BETA</span>
 					</div>
@@ -153,7 +153,7 @@ export const SettingsPage: React.FC = () => {
 								</div>
 								<div className={styles.textStack}>
 									<span className={styles.label}>
-										Модель ИИ
+										AI Model
 									</span>
 									<select
 										className={styles.select}
@@ -179,7 +179,7 @@ export const SettingsPage: React.FC = () => {
 				</section>
 
 				<section className={styles.section}>
-					<h2 className={styles.sectionTitle}>Фокус и Звук</h2>
+					<h2 className={styles.sectionTitle}>Focus & Sound</h2>
 					<div className={styles.card}>
 						<div className={styles.settingItem}>
 							<div className={styles.labelGroup}>
@@ -189,12 +189,12 @@ export const SettingsPage: React.FC = () => {
 								<div>
 									<div className={styles.labelWithBadge}>
 										<span className={styles.label}>
-											Звуки таймера
+											Timer Sounds
 										</span>
 										<span className={styles.soonBadge}>Coming soon</span>
 									</div>
 									<p className={styles.description}>
-										Воспроизводить сигнал по окончании
+										Play sound alert when timer finishes
 									</p>
 								</div>
 							</div>
@@ -207,9 +207,8 @@ export const SettingsPage: React.FC = () => {
 					</div>
 				</section>
 
-				{/* Additional Settings */}
 				<section className={styles.section}>
-					<h2 className={styles.sectionTitle}>Прочее</h2>
+					<h2 className={styles.sectionTitle}>General</h2>
 					<div className={styles.card}>
 						<div className={styles.navItem}>
 							<div className={styles.labelGroup}>
@@ -218,7 +217,7 @@ export const SettingsPage: React.FC = () => {
 								</div>
 								<div className={styles.labelWithBadge}>
 									<span className={styles.label}>
-										Конфиденциальность
+										Privacy
 									</span>
 									<span className={styles.soonBadge}>Coming soon</span>
 								</div>
@@ -236,11 +235,11 @@ export const SettingsPage: React.FC = () => {
 								</div>
 								<div>
 									<span className={styles.label}>
-										Центр помощи
+										Help Center
 									</span>
 									<p className={styles.helpText}>
-										Нашли баг или есть предложение?<br/>
-										Пишите: <a href="mailto:svv.kaz@gmail.com">svv.kaz@gmail.com</a>
+										Found a bug or have a suggestion?<br/>
+										Email us: <a href="mailto:svv.kaz@gmail.com">svv.kaz@gmail.com</a>
 									</p>
 								</div>
 							</div>
@@ -248,7 +247,6 @@ export const SettingsPage: React.FC = () => {
 					</div>
 				</section>
 
-				{/* Logout Button */}
 				<div className={styles.authActions}>
 					<button
 						className={`${styles.logoutBtn} ${isConfirmingLogout ? styles.confirming : ""}`}
@@ -257,19 +255,19 @@ export const SettingsPage: React.FC = () => {
 						{isConfirmingLogout ? (
 							<>
 								<AlertTriangle size={18} />
-								<span>Вы точно уверены?</span>
+								<span>Are you absolutely sure?</span>
 							</>
 						) : (
 							<>
 								<LogOut size={18} />
-								<span>Выйти из аккаунта</span>
+								<span>Log Out</span>
 							</>
 						)}
 					</button>
 				</div>
 
 				<footer className={styles.footer}>
-					<p>TabFlow AI v1.0.0 — Сделано с любовью</p>
+					<p>TabFlow AI v1.0.1 — Made with love</p>
 				</footer>
 			</div>
 		</div>

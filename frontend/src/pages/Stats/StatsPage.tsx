@@ -3,8 +3,24 @@ import { useTrackingStore } from "../../features/tracking/store/trackingStore";
 import { useTabStore } from "../../features/tabs/store/tabStore";
 import { useTaskStore } from "../../features/tasks/store/taskStore";
 import { useTasksQuery } from "../../features/tasks/tasks.hooks";
+import { getStatisticsData } from "../../shared/get-statistic-data/get-statistic-data";
+import {
+	ResponsiveContainer,
+	AreaChart,
+	Area,
+	XAxis,
+	YAxis,
+	Tooltip,
+} from "recharts";
 import styles from "./StatsPage.module.scss";
-import { Activity, ShieldCheck, Clock, Zap, ListTodo, CheckCircle2 } from "lucide-react";
+import {
+	Activity,
+	ShieldCheck,
+	Clock,
+	Zap,
+	ListTodo,
+	CheckCircle2,
+} from "lucide-react";
 
 export const StatsPage: React.FC = () => {
 	const { sessions } = useTrackingStore();
@@ -18,36 +34,44 @@ export const StatsPage: React.FC = () => {
 	React.useEffect(() => {
 		let interval: ReturnType<typeof setInterval>;
 		if (activeTaskId) {
-			interval = setInterval(() => _setTick(t => t + 1), 1000);
+			interval = setInterval(() => _setTick((t) => t + 1), 1000);
 		}
 		return () => clearInterval(interval);
 	}, [activeTaskId]);
 
-	// const focusTime = getDailyDuration("focus");
+	console.log(tasks);
 
 	const totalTasks = tasks?.length || 0;
-	const completedTasks = tasks?.filter(t => t.completed).length || 0;
+	const completedTasks = tasks?.filter((t) => t.completed).length || 0;
 
 	const calculateTotalTime = () => {
 		let total = tasks?.reduce((acc, t) => acc + t.timeSpent, 0) || 0;
 		if (activeTaskId && startTime) {
-			total += (Date.now() - startTime);
+			total += Date.now() - startTime;
 		}
-		return total / 1000 / 60; // in minutes
+		return total / 1000 / 60;
 	};
 
 	const totalTimeSpentMin = calculateTotalTime();
+	const chartData = React.useMemo(() => {
+		return getStatisticsData(tasks || []);
+	}, [tasks]);
 
 	return (
 		<div className={styles.statsPage}>
 			<div className={styles.card}>
-				<h2>
-					<Activity
-						size={20}
-						style={{ verticalAlign: "text-bottom", marginRight: 8 }}
-					/>{" "}
-					Statistics
-				</h2>
+				<div className={styles.statsHeader}>
+					<h2>
+						<Activity
+							size={20}
+							style={{
+								verticalAlign: "text-bottom",
+								marginRight: 8,
+							}}
+						/>{" "}
+						Activity Dashboard
+					</h2>
+				</div>
 
 				<div className={styles.statsGrid}>
 					<div className={styles.statItem}>
@@ -55,7 +79,8 @@ export const StatsPage: React.FC = () => {
 							<Clock size={14} /> Task Time
 						</span>
 						<span className={styles.statValue}>
-							{Math.floor(totalTimeSpentMin / 60)}h {Math.floor(totalTimeSpentMin % 60)}m
+							{Math.floor(totalTimeSpentMin / 60)}h{" "}
+							{Math.floor(totalTimeSpentMin % 60)}m
 						</span>
 					</div>
 					<div className={styles.statItem}>
@@ -71,9 +96,7 @@ export const StatsPage: React.FC = () => {
 						<span className={styles.statLabel}>
 							<ListTodo size={14} /> Total Tasks
 						</span>
-						<span className={styles.statValue}>
-							{totalTasks}
-						</span>
+						<span className={styles.statValue}>{totalTasks}</span>
 					</div>
 
 					<div className={styles.statItem}>
@@ -84,6 +107,103 @@ export const StatsPage: React.FC = () => {
 							{completedTasks}
 						</span>
 					</div>
+				</div>
+
+				<div className={styles.chartWrapper}>
+					<ResponsiveContainer width="100%" height={180}>
+						<AreaChart
+							key={chartData.length + "-" + completedTasks}
+							data={chartData}
+							margin={{
+								top: 15,
+								right: 10,
+								left: -30,
+								bottom: 0,
+							}}
+						>
+							<defs>
+								<linearGradient
+									id="areaGradient"
+									x1="0"
+									y1="0"
+									x2="0"
+									y2="1"
+								>
+									<stop
+										offset="0%"
+										stopColor="#ffffff"
+										stopOpacity={0.25}
+									/>
+									<stop
+										offset="100%"
+										stopColor="#ffffff"
+										stopOpacity={0.0}
+									/>
+								</linearGradient>
+							</defs>
+							<XAxis
+								dataKey="name"
+								tickLine={false}
+								axisLine={false}
+								dy={8}
+								tick={{
+									fill: "var(--text-muted)",
+									fontSize: 10,
+									fontWeight: 600,
+								}}
+							/>
+							<YAxis
+								tickLine={false}
+								axisLine={false}
+								dx={-8}
+								tick={{
+									fill: "var(--text-muted)",
+									fontSize: 10,
+									fontWeight: 600,
+								}}
+								allowDecimals={false}
+							/>
+							<Tooltip
+								content={({ active, payload }) => {
+									if (active && payload && payload.length) {
+										return (
+											<div
+												className={styles.customTooltip}
+											>
+												<span
+													className={
+														styles.tooltipDay
+													}
+												>
+													{payload[0].payload.name}
+												</span>
+												<span
+													className={
+														styles.tooltipVal
+													}
+												>
+													Tasks: {payload[0].value}
+												</span>
+											</div>
+										);
+									}
+									return null;
+								}}
+							/>
+							<Area
+								type="monotone"
+								dataKey="completedTasks"
+								stroke="#ffffff"
+								strokeWidth={2}
+								fill="url(#areaGradient)"
+								activeDot={{
+									r: 4,
+									strokeWidth: 0,
+									fill: "#ffffff",
+								}}
+							/>
+						</AreaChart>
+					</ResponsiveContainer>
 				</div>
 			</div>
 

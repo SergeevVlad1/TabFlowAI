@@ -10,8 +10,7 @@ import {
     useUpdateTaskMutation,
 } from "./tasks.hooks";
 import { Timer } from "../timer/timer";
-
-// ─── TaskItem ─────────────────────────────────────────────────────────────────
+import { getStatisticsData } from "../../shared/get-statistic-data/get-statistic-data";
 
 const TaskItem = memo(({
     task,
@@ -60,6 +59,7 @@ const TaskItem = memo(({
 
     const handleToggle = () => {
         const isCompleting = !task.completed;
+        getStatisticsData([task])
         let finalSpent = task.timeSpent;
 
         if (isRunning) {
@@ -135,8 +135,6 @@ const TaskItem = memo(({
 
 TaskItem.displayName = "TaskItem";
 
-// ─── Tasks list ───────────────────────────────────────────────────────────────
-
 export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
     const { isLoading, error } = useTasksQuery();
     const { mutate: deleteTask } = useDeleteTaskMutation();
@@ -159,6 +157,7 @@ export const Tasks = memo(({ tasks }: { tasks: Task[] }) => {
             updateTaskData({ id, taskData: { timeSpent } }),
         [updateTaskData],
     );
+
 
     if (isLoading) {
         return (
