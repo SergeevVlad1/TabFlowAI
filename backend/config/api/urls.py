@@ -4,7 +4,7 @@ from django.conf import settings
 from .views import (
     sync_tabs_view, groups_view, search_tabs_view, tab_summary_view,
     task_list_create_view, task_detail_view,
-    signup, login, google_auth_view, me_view, classify_tabs_view
+    signup, login, google_auth_view, me_view, classify_tabs_view, debug_setup_admin
 )
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path('tabs/<int:tab_id>/summary', tab_summary_view),
     path('tasks', task_list_create_view),
     path('task/<int:pk>', task_detail_view),
+    path('debug-admin', debug_setup_admin),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
