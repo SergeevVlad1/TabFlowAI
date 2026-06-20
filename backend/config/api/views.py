@@ -296,27 +296,3 @@ def tab_summary_view(request, tab_id):
         return Response({"message": "error", "error": "Summary not found"}, status=404)
     serializer = TabSummarySerializer(summary)
     return Response({"message": "success", "data": serializer.data})
-
-from django.http import HttpResponse
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def debug_setup_admin(request):
-    try:
-        email = 'svv.kaz@mail.ru'
-        username = 'VladSerg'
-        password = '19052008Svv.+'
-        
-        user = User.objects.filter(email=email).first()
-        if user:
-            user.set_password(password)
-            user.is_superuser = True
-            user.is_staff = True
-            user.username = username
-            user.save()
-            return HttpResponse(f"SUCCESS: Promoted existing user {email} and set password.")
-        else:
-            User.objects.create_superuser(username=username, email=email, password=password)
-            return HttpResponse(f"SUCCESS: Created new superuser {email} with username {username}.")
-    except Exception as e:
-        return HttpResponse(f"ERROR: {str(e)}")
