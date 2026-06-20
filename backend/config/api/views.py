@@ -47,27 +47,36 @@ def classify_tabs_view(request):
     # If category is provided, we use it. If not, we might still use categories list for backward compatibility
     target_category = category if category else (serializer.validated_data["categories"][0] if serializer.validated_data["categories"] else "general")
     prompt = f"""
-    You are a strict JSON classifier for browser tabs. 
-    IMPORTANT: Do not perform any URL validation. Accept all URLs as provided, regardless of scheme (e.g., http://, https://, chrome://, file://, about://, localhost, or any other). Treat them as valid strings for classification purposes. Never output any error messages related to URL validity, such as "Enter a valid URL." or similar. Your sole task is to classify based on the given title and URL without questioning their format or validity.
-    If a URL looks non-standard (e.g., 'chrome://extensions/'), still use it if it provides context; otherwise, rely on the title.
-    Never include validation errors in your output. Always produce a valid JSON array with classifications, even if URLs seem invalid to you—ignore that.
+    You are an expert browser tab organizer. Your job is to classify tabs and group related ones into meaningful subgroups.
     
-    The user has selected a focus category: '{target_category}'
-    Your task is:
-    1. For each tab, determine if it is related to the category '{target_category}' based on its title and URL (take URL as is, no validation).
-    2. If a tab has no URL or an empty URL, base the classification solely on the title. If the title provides no relevant information or is generic (e.g., 'New Tab'), assign it to "unnecessary".
-    3. If both title and URL are empty or missing, assign it to "unnecessary".
-    4. If the tab is not related to '{target_category}', assign it to the category "unnecessary".
-    5. If the tab IS related to '{target_category}', assign it EXACTLY to the category "{target_category}". DO NOT create subcategories.
+    IMPORTANT URL RULES:
+    - Accept ALL URLs as-is regardless of scheme (http://, https://, chrome://, file://, localhost, etc.)
+    - Never output validation errors about URLs
+    - Always classify based on the title and URL content, not URL validity
     
-    You must ONLY use two category names in your output: "{target_category}" or "unnecessary".
+    The user selected focus category: '{target_category}'
     
-    Return ONLY a valid JSON array like this:
+    YOUR TASK:
+    1. Determine if each tab is related to '{target_category}' based on its title and URL.
+    2. If a tab is NOT related to '{target_category}' — assign it to "unnecessary".
+    3. If a tab IS related to '{target_category}' — assign it to a SPECIFIC SUBGROUP that describes what the tab is about.
+    
+    SUBGROUP NAMING RULES (very important!):
+    - Create subgroup names that are short, descriptive, and specific (e.g. "GitHub", "Supabase", "Stack Overflow", "Documentation", "Dashboard", "Local Dev", "YouTube")
+    - Group tabs that belong to the SAME service or topic under ONE subgroup name
+    - For example: multiple GitHub tabs → all get category "GitHub"; multiple Render tabs → all get "Render"
+    - The subgroup name should reflect the SERVICE or TOPIC, not the user's original category
+    - Tabs from the same website domain should generally be in the same subgroup
+    - If a tab clearly belongs to a broad topic with no specific service (e.g. a generic article), use '{target_category}' as the subgroup
+    - Generic/empty tabs (e.g. "New Tab", "chrome://newtab/") → "unnecessary"
+    
+    Return ONLY a valid JSON array. No explanations, no extra text:
     [
-      {{"id": 1, "category": "{target_category}"}},
-      {{"id": 2, "category": "unnecessary"}}
+      {{"id": 1, "category": "GitHub"}},
+      {{"id": 2, "category": "Supabase"}},
+      {{"id": 3, "category": "unnecessary"}}
     ]
-    Do not include any explanations, additional text, or other output outside the JSON array. Do not output any error messages or validation results under any circumstances.
+    
     Tabs:
     {tabs}
     """
