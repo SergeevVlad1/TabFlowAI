@@ -12,13 +12,21 @@ def create_admin():
     password = os.getenv('ADMIN_PASSWORD', 'adminpass123')
     
     try:
-        if not User.objects.filter(is_superuser=True).exists():
-            User.objects.create_superuser(username=username, email=email, password=password)
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={'email': email, 'is_superuser': True, 'is_staff': True}
+        )
+        user.set_password(password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.email = email
+        user.save()
+        if created:
             print("Superuser created successfully!")
         else:
-            print("Superuser already exists.")
+            print("Superuser credentials updated/set successfully!")
     except Exception as e:
-        print(f"Error creating superuser: {e}")
+        print(f"Error creating/updating superuser: {e}")
 
 if __name__ == '__main__':
     create_admin()
