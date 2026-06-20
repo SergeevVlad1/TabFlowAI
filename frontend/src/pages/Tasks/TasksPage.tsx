@@ -5,6 +5,7 @@ import { Tasks } from "../../features/tasks/tasks";
 import { useTasksQuery, useCreateTaskMutation } from "../../features/tasks/tasks.hooks";
 import { Popup } from "../../features/tabs/popup/popup";
 import { type Task, useTaskStore } from "../../features/tasks/store/taskStore";
+import { WhatsNewBanner } from "../../shared/ui/whats-new-banner/WhatsNewBanner";
 
 // Extracted Input Section to prevent Task List from re-rendering on every keystroke
 const TaskInputSection = memo(({ onAdd }: { onAdd: (data: { title: string; priority: "high" | "medium" | "low"; estimatedTime: number }) => void }) => {
@@ -127,6 +128,8 @@ export const TasksPage: React.FC = () => {
   return (
     <div className={styles.tasksPage}>
       <TasksSummary tasks={tasks || []} />
+
+      <WhatsNewBanner />
 
       <header className={styles.header}>
         <h1>Tasks</h1>
