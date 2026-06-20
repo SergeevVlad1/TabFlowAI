@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import styles from "./Auth.module.scss";
 import { Logo } from "../../shared/ui/logo/Logo";
 import { LoginForm } from "../../features/auth/ui/loginForm";

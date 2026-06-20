@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 	if (message.action === "groupTabs") {
 		const { tabs } = message;
 
-		fetch("http://localhost:8000/classify-tabs", {
+		fetch("https://tabflowai.onrender.com/api/tabs/groups", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ tabs }),

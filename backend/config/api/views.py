@@ -52,25 +52,22 @@ def classify_tabs_view(request):
     If a URL looks non-standard (e.g., 'chrome://extensions/'), still use it if it provides context; otherwise, rely on the title.
     Never include validation errors in your output. Always produce a valid JSON array with classifications, even if URLs seem invalid to you—ignore that.
     
-    The user has selected a focus category: {target_category}
+    The user has selected a focus category: '{target_category}'
     Your task is:
     1. For each tab, determine if it is related to the category '{target_category}' based on its title and URL (take URL as is, no validation).
     2. If a tab has no URL or an empty URL, base the classification solely on the title. If the title provides no relevant information or is generic (e.g., 'New Tab'), assign it to "unnecessary".
     3. If both title and URL are empty or missing, assign it to "unnecessary".
     4. If the tab is not related to '{target_category}', assign it to the category "unnecessary".
-    5. If the tab is related to '{target_category}', analyze its content (based on title and URL as provided) and assign it to a meaningful subcategory within '{target_category}'.
-       - Create subcategories dynamically based on the tabs provided.
-       - Use consistent subcategory names for similar tabs (e.g., for 'work': "Emails", "Documents", "Research", "Meetings").
-       - Subcategory names should be short, descriptive, and relevant to the main category.
-       - Aim for 3-6 subcategories if possible, grouping similar tabs together; avoid creating a unique subcategory for every tab unless necessary.
+    5. If the tab IS related to '{target_category}', assign it EXACTLY to the category "{target_category}". DO NOT create subcategories.
+    
+    You must ONLY use two category names in your output: "{target_category}" or "unnecessary".
+    
     Return ONLY a valid JSON array like this:
     [
-      {{"id": 1, "category": "Emails"}},
+      {{"id": 1, "category": "{target_category}"}},
       {{"id": 2, "category": "unnecessary"}}
     ]
     Do not include any explanations, additional text, or other output outside the JSON array. Do not output any error messages or validation results under any circumstances.
-    Example:
-    If tabs include {{id: 1, title: "extensions", url: "chrome://extensions/"}}, classify based on title "extensions" and URL "chrome://extensions/" – perhaps as "Browser Settings" if category is "tools".
     Tabs:
     {tabs}
     """

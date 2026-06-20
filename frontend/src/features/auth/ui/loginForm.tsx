@@ -28,7 +28,7 @@ export const LoginForm = () => {
 	const navigate = useNavigate();
 	const loginMutation = useLoginMutation(navigate, setError);
 	const isLoading = loginMutation.isPending;
-	const { login, googleIsLoading } = usehandleGoogleLogin(navigate, setError);
+	const { login } = usehandleGoogleLogin(navigate, setError);
 
 	const onSubmit = (data: z.infer<typeof loginSchema>) => {
 		loginMutation.mutate(data);

@@ -2,7 +2,7 @@ import axios, { type AxiosError } from "axios";
 import { storage } from "./storage";
 
 export const baseURL =
-	import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+	import.meta.env.VITE_API_URL || "https://tabflowai.onrender.com/api";
 
 export enum MethodEnum {
 	GET = "GET",
