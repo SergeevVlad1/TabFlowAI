@@ -25,15 +25,24 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'tabflowai.onrender.com',
-    '.onrender.com',  # Разрешаем все поддомены render
+    '.onrender.com',  
     'localhost',
     '127.0.0.1',
 ]
 
-# Дополнительно разрешаем хосты из переменной окружения, если они там есть
 env_hosts = os.getenv('ALLOWED_HOSTS')
 if env_hosts:
     ALLOWED_HOSTS.extend([h.strip() for h in env_hosts.split(',') if h.strip()])
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://tabflowai.onrender.com',
+    'https://*.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+env_csrf = os.getenv('CSRF_TRUSTED_ORIGINS')
+if env_csrf:
+    CSRF_TRUSTED_ORIGINS.extend([h.strip() for h in env_csrf.split(',') if h.strip()])
 
 # Application definition
 
