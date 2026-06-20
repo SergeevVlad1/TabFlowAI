@@ -267,7 +267,7 @@ export const SettingsPage: React.FC = () => {
 				</div>
 
 				<footer className={styles.footer}>
-					<p>TabFlow AI v1.0.1 - Made with ❤️</p>
+					<p>TabFlow AI v1.1.0 - Made with ❤️</p>
 				</footer>
 			</div>
 		</div>

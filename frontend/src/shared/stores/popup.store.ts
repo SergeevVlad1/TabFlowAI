@@ -30,27 +30,12 @@ interface TabStore {
 	reset: () => void;
 }
 
-const DEFAULT_CATEGORIES: CategoryType[] = [
-	"work",
-	"study",
-	"entertainment",
-	"finance",
-	"shopping",
-	"news",
-	"social",
-	"development",
-	"productivity",
-	"health",
-	"travel",
-	"design",
-	"other",
-];
 
 export const useTabStore = create<TabStore>((set, get) => ({
 	tabs: [],
 	loading: false,
 	modalState: "closed",
-	selectedCategories: DEFAULT_CATEGORIES,
+	selectedCategories: [],
 
 	fetchTabs: async () => {
 		set({ loading: true });
@@ -80,7 +65,7 @@ export const useTabStore = create<TabStore>((set, get) => ({
 	reset: () =>
 		set({
 			modalState: "closed",
-			selectedCategories: DEFAULT_CATEGORIES,
+			selectedCategories: [],
 		}),
 }));
 

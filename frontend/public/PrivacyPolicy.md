@@ -38,7 +38,7 @@ Our Chrome Extension requires specific permissions to function:
 - **`alarms`**: Used to manage timers and reminders for the integrated task manager.
 - **`sidePanel`**: Allows the extension to provide a seamless UI experience within the Chrome Side Panel.
 - **`identity`**: Required to enable secure Google OAuth single sign-on.
-- **`<all_urls>`**: Necessary for the extension to interact with tabs across different domains to gather the titles required for AI categorization.
+- **`https://tabflowai.onrender.com/`**: Required to securely communicate with our AI backend server to classify your tabs and synchronize your tasks.
 
 ## 5. Security
 

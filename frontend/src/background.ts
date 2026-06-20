@@ -10,7 +10,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 			["blockedDomains"],
 			(result: { blockedDomains?: string[] }) => {
 				const blocked = result.blockedDomains || [];
-				const hostname = new URL(tab.url!).hostname;
+				let hostname = "";
+				try {
+					hostname = new URL(tab.url!).hostname;
+				} catch {
+					return;
+				}
 
 				if (blocked.some((domain: string) => hostname.includes(domain))) {
 					chrome.tabs.update(tabId, { url: "blocked.html" });
