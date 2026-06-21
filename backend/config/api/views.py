@@ -305,3 +305,10 @@ def tab_summary_view(request, tab_id):
         return Response({"message": "error", "error": "Summary not found"}, status=404)
     serializer = TabSummarySerializer(summary)
     return Response({"message": "success", "data": serializer.data})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    """Simple health check endpoint for keep-alive pings."""
+    return Response({"status": "ok", "message": "Server is healthy"})

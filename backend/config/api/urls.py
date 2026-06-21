@@ -4,10 +4,12 @@ from django.conf import settings
 from .views import (
     sync_tabs_view, groups_view, search_tabs_view, tab_summary_view,
     task_list_create_view, task_detail_view,
-    signup, login, google_auth_view, me_view, classify_tabs_view
+    signup, login, google_auth_view, me_view, classify_tabs_view,
+    health_check
 )
 
 urlpatterns = [
+    path('health', health_check),
     path('auth/register', signup),
     path('auth/login', login),
     path('auth/google', google_auth_view),
