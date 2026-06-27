@@ -102,6 +102,7 @@ def classify_tabs_view(request):
         return Response(final_data, status=status.HTTP_200_OK)
     except Exception as e:
         error_str = str(e).lower()
+        print("GEMINI ERROR:", str(e)) # Логируем ошибку в консоль сервера (Render)
         
         # Catch Google Gemini rate limits (429, resource exhausted, quota)
         if "429" in error_str or "exhausted" in error_str or "quota" in error_str:
@@ -117,7 +118,8 @@ def classify_tabs_view(request):
         return Response(
             {
                 "ok": False, 
-                "error": "AI is taking a quick break to process the massive Product Hunt traffic! Please try again in a moment."
+                "error": "AI is taking a quick break to process the massive Product Hunt traffic! Please try again in a moment.",
+                "debug_info": str(e) # Временно добавим настоящую ошибку сюда для отладки
             },
             status=status.HTTP_400_BAD_REQUEST
         )
