@@ -105,6 +105,11 @@ def classify_tabs_view(request):
         if response.status_code != 200:
             raise Exception(f"Groq Error {response.status_code}: {response.text}")
             
+        # Получаем лимиты из заголовков ответа Groq
+        rem_tokens = response.headers.get('x-ratelimit-remaining-tokens', 'unknown')
+        rem_requests = response.headers.get('x-ratelimit-remaining-requests', 'unknown')
+        print(f"GROQ LIMITS -> Tokens left: {rem_tokens}, Requests left: {rem_requests}") # Выводим в консоль сервера
+            
         resp_json = response.json()
         raw_text = resp_json['choices'][0]['message']['content']
         
@@ -116,7 +121,11 @@ def classify_tabs_view(request):
         if isinstance(parsed, list):
             final_data = {
                 "ok": True,
-                "data": parsed
+                "data": parsed,
+                "debug_limits": {
+                    "remaining_tokens": rem_tokens,
+                    "remaining_requests": rem_requests
+                }
             }
         
         return Response(final_data, status=status.HTTP_200_OK)
