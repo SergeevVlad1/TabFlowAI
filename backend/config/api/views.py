@@ -94,7 +94,7 @@ Tabs:
         
         payload = {
             # Возвращаем проверенную самую мощную модель Groq (Llama 4 пока не поддерживается в Groq)
-            "model": "llama-3.3-70b-versatile", 
+            "model": "meta-llama/llama-4-scout-17b-16e-instruct", 
             "messages": [
                 {"role": "user", "content": prompt}
             ]
