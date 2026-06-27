@@ -81,13 +81,35 @@ def classify_tabs_view(request):
     {tabs}
     """
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={
-                "response_mime_type": "application/json"
-            }
-        )
-        raw_text = response.text
+        import requests
+        import os
+        
+        # Получаем ключ напрямую из переменных окружения (чтобы не трогать settings.py)
+        openrouter_key = os.environ.get("OPENROUTER_API_KEY", "")
+        
+        headers = {
+            "Authorization": f"Bearer {openrouter_key}",
+            "HTTP-Referer": "https://tabflowai.onrender.com", # Required by OpenRouter
+            "X-Title": "TabFlowAI",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            # Используем бесплатную и быструю модель (можно поменять на любую другую из каталога OpenRouter)
+            "model": "google/gemini-2.0-flash-lite-preview-02-05:free", 
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
+        }
+        
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+        
+        if response.status_code != 200:
+            raise Exception(f"OpenRouter Error {response.status_code}: {response.text}")
+            
+        resp_json = response.json()
+        raw_text = resp_json['choices'][0]['message']['content']
+        
         json_string = extract_json(raw_text)
         parsed = json.loads(json_string)
         
