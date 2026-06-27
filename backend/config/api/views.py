@@ -101,8 +101,24 @@ def classify_tabs_view(request):
         
         return Response(final_data, status=status.HTTP_200_OK)
     except Exception as e:
+        error_str = str(e).lower()
+        
+        # Catch Google Gemini rate limits (429, resource exhausted, quota)
+        if "429" in error_str or "exhausted" in error_str or "quota" in error_str:
+            return Response(
+                {
+                    "ok": False, 
+                    "error": "Wow! We are getting huge traffic from Product Hunt! 🚀 Please try again in 30-60 seconds."
+                },
+                status=429
+            )
+            
+        # Catch all other errors
         return Response(
-            {"ok": False, "error": str(e)},
+            {
+                "ok": False, 
+                "error": "AI is taking a quick break to process the massive Product Hunt traffic! Please try again in a moment."
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 @api_view(['POST'])
