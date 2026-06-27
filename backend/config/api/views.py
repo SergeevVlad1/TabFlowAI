@@ -68,12 +68,12 @@ Rules:
 * If no better subgroup exists, use the focus category name.
 * Empty tabs like "New Tab" or "chrome://newtab/" → `"unnecessary"`.
 
-Return ONLY valid JSON:
+Return ONLY a valid JSON array. No explanations, no extra text:
 
 [
-{"id":1,"category":"Code"},
-{"id":2,"category":"Research"},
-{"id":3,"category":"unnecessary"}
+{{"id": 1,"category":"Code"}},
+{{"id": 2,"category":"Research"}},
+{{"id": 3,"category":"unnecessary"}}
 ]
 
 Tabs:
@@ -93,8 +93,8 @@ Tabs:
         }
         
         payload = {
-            # Самая умная модель в Groq. Отвечает за миллисекунды.
-            "model": "meta-llama/llama-4-scout-17b-16e-instruct", 
+            # Возвращаем проверенную самую мощную модель Groq (Llama 4 пока не поддерживается в Groq)
+            "model": "llama-3.3-70b-versatile", 
             "messages": [
                 {"role": "user", "content": prompt}
             ]
