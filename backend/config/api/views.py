@@ -84,30 +84,26 @@ def classify_tabs_view(request):
         import requests
         import os
         
-        # Получаем ключ напрямую из переменных окружения (чтобы не трогать settings.py)
-        openrouter_key = os.environ.get("OPENROUTER_API_KEY", "")
+        # Получаем ключ от Groq
+        groq_key = os.environ.get("GROQ_API_KEY", "")
         
         headers = {
-            "Authorization": f"Bearer {openrouter_key}",
-            "HTTP-Referer": "https://tabflowai.onrender.com", # Required by OpenRouter
-            "X-Title": "TabFlowAI",
+            "Authorization": f"Bearer {groq_key}",
             "Content-Type": "application/json"
         }
         
         payload = {
-    "model": "google/gemini-2.5-flash:free",
-    "messages": [
-        {
-            "role": "user",
-            "content": prompt
+            # Самая умная модель в Groq. Отвечает за миллисекунды.
+            "model": "llama-3.3-70b-versatile", 
+            "messages": [
+                {"role": "user", "content": prompt}
+            ]
         }
-    ]
-}
         
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
         
         if response.status_code != 200:
-            raise Exception(f"OpenRouter Error {response.status_code}: {response.text}")
+            raise Exception(f"Groq Error {response.status_code}: {response.text}")
             
         resp_json = response.json()
         raw_text = resp_json['choices'][0]['message']['content']
