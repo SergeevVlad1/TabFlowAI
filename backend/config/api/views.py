@@ -47,38 +47,38 @@ def classify_tabs_view(request):
     # If category is provided, we use it. If not, we might still use categories list for backward compatibility
     target_category = category if category else (serializer.validated_data["categories"][0] if serializer.validated_data["categories"] else "general")
     prompt = f"""
-    You are an expert browser tab organizer. Your job is to classify tabs and intelligently group related ones into meaningful, workflow-based subgroups.
-    
-    IMPORTANT URL RULES:
-    - Accept ALL URLs as-is regardless of scheme (http://, https://, chrome://, file://, localhost, etc.)
-    - Never output validation errors about URLs
-    - Always classify based on the title and URL content, not URL validity
-    
-    The user selected focus category: '{target_category}'
-    
-    YOUR TASK:
-    1. Determine if each tab is related to '{target_category}' based on its title and URL.
-    2. If a tab is NOT related to '{target_category}' — assign it to "unnecessary".
-    3. If a tab IS related to '{target_category}' — assign it to a SPECIFIC SUBGROUP that describes the PURPOSE of the tab.
-    
-    SUBGROUP NAMING RULES (very important!):
-    - DO NOT just use website names, domains, or direct tab titles (e.g., avoid "GitHub", "Render", "Google", "Supabase").
-    - INVENT broad, meaningful, conceptual category names that describe the *type of work* or *context* of these tabs.
-    - Group tabs that serve a similar workflow purpose together.
-    - Examples of good subgroup names: "Code & Version Control", "Cloud Infrastructure", "Database Management", "Research & Docs", "Project Planning", "Local Environment", "Analytics".
-    - Keep subgroup names concise (1-3 words) but highly descriptive of the task/concept.
-    - If a tab clearly belongs to a broad topic with no specific sub-concept, use '{target_category}' as the subgroup.
-    - Generic/empty tabs (e.g. "New Tab", "chrome://newtab/") → "unnecessary"
-    
-    Return ONLY a valid JSON array. No explanations, no extra text:
-    [
-      {{"id": 1, "category": "Code Repositories"}},
-      {{"id": 2, "category": "Cloud Infrastructure"}},
-      {{"id": 3, "category": "unnecessary"}}
-    ]
-    
-    Tabs:
-    {tabs}
+    You organize browser tabs.
+
+Focus category: "{target_category}".
+
+Task:
+
+* Classify every tab.
+* If a tab belongs to the focus category, assign it a meaningful conceptual subgroup.
+* Otherwise assign `"unnecessary"`.
+
+Rules:
+
+* Accept any URL scheme (https, http, chrome://, file://, localhost, etc.).
+* Judge tabs using title and URL/domain.
+* Never reject or validate URLs.
+* Subgroup names must describe the purpose or workflow, not the website.
+* Do NOT use website names, domains or page titles as categories.
+* Use short descriptive names (1–3 words), e.g. "Code", "Research", "Cloud", "Database", "Planning", "Analytics".
+* If no better subgroup exists, use the focus category name.
+* Empty tabs like "New Tab" or "chrome://newtab/" → `"unnecessary"`.
+
+Return ONLY valid JSON:
+
+[
+{"id":1,"category":"Code"},
+{"id":2,"category":"Research"},
+{"id":3,"category":"unnecessary"}
+]
+
+Tabs:
+{tabs}
+
     """
     try:
         import requests
